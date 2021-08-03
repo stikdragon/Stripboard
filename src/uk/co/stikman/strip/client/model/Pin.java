@@ -1,6 +1,5 @@
 package uk.co.stikman.strip.client.model;
 
-import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 
 public class Pin {

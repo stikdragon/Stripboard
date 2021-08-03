@@ -74,10 +74,10 @@ public class ComponentRenderer {
 	}
 
 	private static void resistor(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
-		Vector2i p = comp.getPin(1).getModel().getPosition(); // position in component
+		Vector2i p = comp.getPin(1).getPosition(); // position in component
 
-		int x1 = p.x + x0;
-		int y1 = p.y + y0;
+		int x1 = p.x;// + x0;
+		int y1 = p.y;// + y0;
 
 		ctx.drawPin(x0, y0);
 		if (!(x0 == x1 && y0 == y1)) {

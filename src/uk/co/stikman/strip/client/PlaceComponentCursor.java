@@ -19,7 +19,11 @@ public class PlaceComponentCursor extends CursorTool {
 	public PlaceComponentCursor(Component comp) {
 		super();
 		this.comp = comp;
-		inst = new ComponentInstance(comp);
+		reset();
+	}
+
+	private void reset() {
+		inst = new ComponentInstance(comp);		
 	}
 
 	@Override
@@ -50,6 +54,12 @@ public class PlaceComponentCursor extends CursorTool {
 		int x0 = (int) downAt.x;
 		int y0 = (int) downAt.y;
 		downAt = null;
+		
+		//
+		// add component to the board
+		//
+		getApp().getBoard().placeComponent(inst);
+		reset();
 	}
 
 	@Override

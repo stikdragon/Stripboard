@@ -49,7 +49,7 @@ public class ComponentLibrary {
 				if (k.getName().matches("[0-9]+")) {
 					int n = Integer.parseInt(k.getName());
 					while (n >= comp.getPins().size())
-						comp.getPins().add(new Pin(comp, comp.getPins().size()));
+						comp.getPins().add(new Pin(comp, comp.getPins().size())); 
 					bits = k.getValue().split(",");
 					if (bits.length != 2 && bits.length != 3)
 						throw new IllegalArgumentException("Expected two or three arguments for a pin");

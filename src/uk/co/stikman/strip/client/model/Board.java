@@ -39,4 +39,10 @@ public class Board {
 		return components;
 	}
 
+	public void placeComponent(ComponentInstance inst) {
+		components.add(inst);
+		for (PinInstance p : inst.getPins()) 
+			getHole(p.getPosition().x, p.getPosition().y).setPin(p);
+	}
+
 }

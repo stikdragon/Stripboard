@@ -16,7 +16,6 @@ import uk.co.stikman.strip.client.math.Matrix3;
 public class ComponentInstance {
 	private final Component		component;
 	private String				name;
-	private Hole				hole;
 	private List<PinInstance>	pins		= new ArrayList<>();
 	private int					rotation	= 0;				// 0,1,2,3
 	private Matrix3				tmpM		= new Matrix3();
@@ -45,19 +44,6 @@ public class ComponentInstance {
 		return "ComponentInstance [component=" + component + ", name=" + name + "]";
 	}
 
-	/**
-	 * return the hole pin 1 is in
-	 * 
-	 * @return
-	 */
-	public Hole getHole() {
-		return hole;
-	}
-
-	public final void setHole(Hole hole) {
-		this.hole = hole;
-	}
-
 	public PinInstance getPin(int idx) {
 		return pins.get(idx);
 	}
@@ -80,5 +66,9 @@ public class ComponentInstance {
 			for (int i = 1; i < pins.size(); ++i)
 				pins.get(i).getPosition().set(one.getPosition().x, one.getPosition().y).add(component.getPins().get(i).getPosition());
 		}
+	}
+
+	public final List<PinInstance> getPins() {
+		return pins;
 	}
 }

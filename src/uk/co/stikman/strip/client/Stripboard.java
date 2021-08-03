@@ -8,6 +8,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -30,6 +31,8 @@ import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentLibrary;
 import uk.co.stikman.strip.client.model.Hole;
+import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Util;
 
 public class Stripboard implements EntryPoint {
 	public static final float	PI			= 3.14159f;
@@ -61,6 +64,7 @@ public class Stripboard implements EntryPoint {
 		root.setWidgetLeftRight(cnv, 0, Unit.PX, 0, Unit.PX);
 		root.setWidgetTopBottom(cnv, TOPSIZE, Unit.PX, 0, Unit.PX);
 		cnv.addKeyPressHandler(this::keyPress);
+		cnv.addKeyDownHandler(this::keyDown);
 		cnv.addMouseDownHandler(this::mouseDown);
 		cnv.addMouseMoveHandler(this::mouseMove);
 		cnv.addMouseUpHandler(this::mouseUp);
@@ -92,6 +96,7 @@ public class Stripboard implements EntryPoint {
 				addComponent();
 				return;
 			}
+			
 
 			//
 			// otherwise pass on to the current tool
@@ -101,6 +106,16 @@ public class Stripboard implements EntryPoint {
 			if (invalid)
 				render();
 		}
+	}
+	
+	
+	private void keyDown(KeyDownEvent ev) {
+		Util.log("key " + ev.getNativeKeyCode());
+		if (ev.getNativeKeyCode() == 27) { // esc
+			setTool(new PointerTool());
+		}
+		if (invalid)
+			render();
 	}
 
 	private void mouseDown(MouseDownEvent ev) {
@@ -167,6 +182,7 @@ public class Stripboard implements EntryPoint {
 		this.currentTool = tool;
 		tool.setApp(this);
 		tool.start();
+		invalidate();
 	}
 
 	private void resize(ResizeEvent ev) {
@@ -231,9 +247,8 @@ public class Stripboard implements EntryPoint {
 		}
 		
 		for (ComponentInstance comp : board.getComponents()) {
-			Hole hole = comp.getHole();
-			 ComponentRenderer.render(this, comp, hole.getX(), hole.getY());
-			
+			PinInstance p = comp.getPin(0);
+			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y);
 		}
 		
 

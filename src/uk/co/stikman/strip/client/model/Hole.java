@@ -1,10 +1,10 @@
 package uk.co.stikman.strip.client.model;
 
 public class Hole {
-	private boolean	broken	= false;
-	private Pin		pin		= null;
-	private int		x;
-	private int		y;
+	private boolean		broken	= false;
+	private PinInstance	pin		= null;
+	private int			x;
+	private int			y;
 
 	public boolean isBroken() {
 		return broken;
@@ -14,11 +14,11 @@ public class Hole {
 		this.broken = broken;
 	}
 
-	public Pin getPin() {
+	public PinInstance getPin() {
 		return pin;
 	}
 
-	public void setPin(Pin pin) {
+	public void setPin(PinInstance pin) {
 		this.pin = pin;
 	}
 

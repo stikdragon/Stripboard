@@ -24,7 +24,7 @@ public class ComponentInstance {
 		super();
 		this.component = component;
 		for (Pin p : component.getPins())
-			pins.add(new PinInstance(p, component.isStretchy()));
+			pins.add(new PinInstance(this, p, component.isStretchy()));
 	}
 
 	public final Component getComponent() {
@@ -60,12 +60,10 @@ public class ComponentInstance {
 	 * Update all pin positions from the location of the first pin
 	 */
 	public void updatePinPositions() {
-		if (!component.isStretchy()) {
-			// TODO: rotate
-			PinInstance one = pins.get(0);
-			for (int i = 1; i < pins.size(); ++i)
-				pins.get(i).getPosition().set(one.getPosition().x, one.getPosition().y).add(component.getPins().get(i).getPosition());
-		}
+		// TODO: rotate
+		PinInstance one = pins.get(0);
+		for (int i = 1; i < pins.size(); ++i)
+			pins.get(i).getPosition().set(one.getPosition().x, one.getPosition().y).add(component.getPins().get(i).getPosition());
 	}
 
 	public final List<PinInstance> getPins() {

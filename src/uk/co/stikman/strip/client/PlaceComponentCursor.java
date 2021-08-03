@@ -49,11 +49,21 @@ public class PlaceComponentCursor extends CursorTool {
 	public void mouseUp(Vector3 pos, int button) {
 		if (downAt == null)
 			return;
-		int x1 = (int) pos.x;
-		int y1 = (int) pos.y;
 		int x0 = (int) downAt.x;
 		int y0 = (int) downAt.y;
 		downAt = null;
+		
+		//
+		// check it's not 0 size
+		//
+		if (comp.isStretchy()) {
+			int x1 = inst.getPin(1).getPosition().x;
+			int y1 = inst.getPin(1).getPosition().y;
+			if (x1 == x0 && y1 == y0) {
+				reset();
+				return;
+			}
+		}
 		
 		//
 		// add component to the board
@@ -76,6 +86,11 @@ public class PlaceComponentCursor extends CursorTool {
 		} else {
 			ctx.setFillStyle(hilightColour);
 			ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
+			
+			//
+			// draw ghost version
+			//
+			ComponentRenderer.render(getApp(), inst, currentHoleX, currentHoleY);
 		}
 	}
 

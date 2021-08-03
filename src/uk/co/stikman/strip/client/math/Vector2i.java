@@ -88,9 +88,10 @@ public class Vector2i {
 		return x * x + y * y;
 	}
 
-	public void set(Vector2i v) {
+	public Vector2i set(Vector2i v) {
 		this.x = v.x;
 		this.y = v.y;
+		return this;
 	}
 
 	public static Vector2i parse(String s) {

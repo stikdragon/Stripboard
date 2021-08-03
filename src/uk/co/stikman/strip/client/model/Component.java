@@ -3,12 +3,15 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.stikman.strip.client.math.Vector2i;
+
 public class Component {
 	private String			group;
 	private String			name;
 	private String			desc;
 	private ComponentType	type;
 	private List<Pin>		pins	= new ArrayList<>();
+	private Vector2i		size	= null;
 
 	public Component(String group, String name) {
 		super();
@@ -46,7 +49,6 @@ public class Component {
 		case C_AXIAL:
 		case C_DISC:
 		case C_RADIAL:
-		case IC_DIP:
 		case LED:
 		case R:
 			return true;
@@ -57,5 +59,20 @@ public class Component {
 
 	public final List<Pin> getPins() {
 		return pins;
+	}
+
+	public Vector2i getSize() {
+		return size;
+	}
+
+	public void calcSize() {
+		size = new Vector2i();
+		int mx = 0;
+		int my = 0;
+		for (Pin p : pins) {
+			mx = Math.max(mx, p.getPosition().x);
+			my = Math.max(my, p.getPosition().y);
+		}
+		size.set(mx + 1, my + 1);
 	}
 }

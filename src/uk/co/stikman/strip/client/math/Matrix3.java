@@ -22,8 +22,9 @@ public class Matrix3 {
 	 * Since this is intended for use in GWT it's assumed that these will NOT
 	 * get shared between threads, so beware if you repurpose for non-web stuff
 	 */
-	private static final Matrix3	tmpM	= new Matrix3();
-	private static final float[]	tmpFA	= new float[9];
+	private static final Matrix3	tmpM		= new Matrix3();
+	private static final float[]	tmpFA		= new float[9];
+	public static final Matrix3		IDENTITY	= new Matrix3().makeIdentity();
 
 	/**
 	 * Creates an empty matrix. All elements are 0.

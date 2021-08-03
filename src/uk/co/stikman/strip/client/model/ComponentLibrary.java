@@ -56,6 +56,7 @@ public class ComponentLibrary {
 					comp.getPins().get(n).getPosition().set(Integer.parseInt(bits[0]), Integer.parseInt(bits[1]));
 				}
 			}
+			comp.calcSize();
 
 			components.put(comp.getName(), comp);
 		}

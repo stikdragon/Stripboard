@@ -9,6 +9,7 @@ import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentType;
+import uk.co.stikman.strip.client.model.PinInstance;
 
 public class ComponentRenderer {
 
@@ -16,11 +17,13 @@ public class ComponentRenderer {
 		void go(RenderIntf ctx, ComponentInstance comp, int x0, int y0);
 	}
 
-	private static Map<ComponentType, ComponentRendererMethod>	lkp		= new HashMap<>();
-	private static final Matrix3								tmpm	= new Matrix3();
+	private static Map<ComponentType, ComponentRendererMethod>	lkp			= new HashMap<>();
+	private static final Matrix3								tmpm		= new Matrix3();
+	private static Map<Component, float[]>						vertCache	= new HashMap<>();
 
 	static {
 		lkp.put(ComponentType.R, ComponentRenderer::resistor);
+		lkp.put(ComponentType.IC_DIP, ComponentRenderer::dip);
 	}
 
 	//@formatter:off
@@ -76,8 +79,8 @@ public class ComponentRenderer {
 	private static void resistor(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
 		Vector2i p = comp.getPin(1).getPosition(); // position in component
 
-		int x1 = p.x;// + x0;
-		int y1 = p.y;// + y0;
+		int x1 = p.x;
+		int y1 = p.y;
 
 		ctx.drawPin(x0, y0);
 		if (!(x0 == x1 && y0 == y1)) {
@@ -104,4 +107,37 @@ public class ComponentRenderer {
 		}
 	}
 
+	private static void dip(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
+		//
+		// work out the bounding rect, draw that
+		//
+		Component model = comp.getComponent();
+		Vector2i sz = model.getSize();
+
+		for (PinInstance p : comp.getPins())
+			ctx.drawPin(p.getPosition().x, p.getPosition().y);
+
+		float[] verts = vertCache.get(model);
+		if (verts == null) {
+			//
+			// generate rect for this one
+			//
+			verts = new float[14];
+			int i = 0;
+			final float SHRINKX = 0.4f; // chip body should be smaller than the pins 
+			final float SHRINKY = 0.1f; 
+			//@formatter:off
+			verts[i++] = SHRINKX;            verts[i++] = SHRINKY;
+			verts[i++] = sz.x / 2.0f - 0.5f; verts[i++] = SHRINKY;
+			verts[i++] = sz.x / 2.0f;        verts[i++] = 0.5f;
+			verts[i++] = sz.x / 2.0f + 0.5f; verts[i++] = SHRINKY;
+			verts[i++] = sz.x - SHRINKX;     verts[i++] = SHRINKY;
+			verts[i++] = sz.x - SHRINKX;     verts[i++] = sz.y - SHRINKY;
+			verts[i++] = SHRINKX;            verts[i++] = sz.y - SHRINKY;
+			//@formatter:on
+			vertCache.put(model, verts);
+		}
+		tmpm.makeTranslation(x0, y0);
+		ctx.drawPoly(ctx.getApp().getTheme().getComponentFill().css(), tmpm, verts);
+	}
 }

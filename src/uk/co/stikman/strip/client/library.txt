@@ -1,0 +1,63 @@
+#
+# Special types:
+#  R -        Resistor, adjustable params: scale, separation
+#  C-Radial - Capacitor radial, adjustable params: scale, separation
+#  C-Axial -  Capacitor axial, adjustable params: scale, separation
+#  C-Disc -   Capacitor disc, adjustable params, scale, separation
+#
+# Params:
+#   separation: 
+#     allows components with two pins to be stretched apart
+#   scale:
+#     scales up the physical size of the component, eg. for big resistors.  It's especially
+#     useful with electrolytic caps, where a scale of 1.0 means 2.54" diameter can
+#    
+
+[Integrated Circuits/555]
+desc=555 Timer
+1=1,1,GND
+2=1,2,
+3=1,3,
+4=1,4,
+5=2,1,
+6=2,2,
+7=2,3,
+8=2,4,VCC
+type=IC_DIP
+
+
+[General/R]
+desc=Resistor
+type=R
+1=1,1
+2=2,1
+
+
+[General/C-Radial]
+type=C-Radial
+desc=Radial Capacitor
+1=1,1
+2=2,1
+
+
+[General/C-Axial]
+type=C-Axial
+desc=Axial Capacitor
+1=1,1
+2=4,1
+
+
+[General/C-Disc]
+type=C-Disc
+desc=Disc Shaped Capacitor
+1=1,1
+2=3,1
+
+
+
+
+
+
+
+
+

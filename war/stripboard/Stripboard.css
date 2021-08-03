@@ -1,0 +1,37 @@
+body {
+	background: black;
+	color: #dfd;
+}
+
+* {
+	font-family: consolas;
+}
+
+textarea {
+	width: 100%;
+	box-sizing: border-box;
+	resize: none;
+	background: #333;
+	color: #dfd;
+	border: 1px solid #444;
+}
+
+canvas {
+	width: 100%;
+	height: 100%;
+}
+
+*:focus {
+	outline: none;
+}
+
+.gwt-DialogBox * {
+	color: black;
+}
+
+.sample {
+	padding: 4px;
+	cursor: pointer;
+	background: #e2e2e2;
+	margin: 3px;
+}

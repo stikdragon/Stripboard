@@ -1,9 +1,10 @@
 package uk.co.stikman.strip.client.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class Section {
+public class Section implements Iterable<IniPair> {
 	private String			name;
 	private List<IniPair>	pairs	= new ArrayList<>();
 
@@ -38,6 +39,11 @@ public class Section {
 		if (x == null)
 			return null;
 		return x.getValue();
+	}
+
+	@Override
+	public Iterator<IniPair> iterator() {
+		return pairs.iterator();
 	}
 
 }

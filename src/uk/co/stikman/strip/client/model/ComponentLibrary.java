@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import uk.co.stikman.strip.client.util.Ini;
+import uk.co.stikman.strip.client.util.IniPair;
 import uk.co.stikman.strip.client.util.Section;
 
 public class ComponentLibrary {
@@ -39,10 +40,22 @@ public class ComponentLibrary {
 			//@formatter:on
 
 			comp.setType(typ);
-			
+
 			comp.setDesc(comp.getName());
 			if (sect.containsKey("desc"))
 				comp.setDesc(sect.get("desc"));
+
+			for (IniPair k : sect) {
+				if (k.getName().matches("[0-9]+")) {
+					int n = Integer.parseInt(k.getName());
+					while (n >= comp.getPins().size())
+						comp.getPins().add(new Pin(comp, comp.getPins().size()));
+					bits = k.getValue().split(",");
+					if (bits.length != 2 && bits.length != 3)
+						throw new IllegalArgumentException("Expected two or three arguments for a pin");
+					comp.getPins().get(n).getPosition().set(Integer.parseInt(bits[0]), Integer.parseInt(bits[1]));
+				}
+			}
 
 			components.put(comp.getName(), comp);
 		}

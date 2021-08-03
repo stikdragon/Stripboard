@@ -231,7 +231,8 @@ public class Stripboard implements EntryPoint {
 		}
 		
 		for (ComponentInstance comp : board.getComponents()) {
-			
+			Hole hole = comp.getHole();
+			 ComponentRenderer.render(this, comp, hole.getX(), hole.getY());
 			
 		}
 		

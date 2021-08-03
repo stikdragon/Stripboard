@@ -14,7 +14,7 @@ public class Board {
 		this.height = height;
 		holes = new Hole[width * height];
 		for (int i = 0; i < holes.length; ++i)
-			holes[i] = new Hole();
+			holes[i] = new Hole(i % width, i / width);
 	}
 
 	public final int getWidth() {

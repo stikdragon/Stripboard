@@ -3,30 +3,42 @@ package uk.co.stikman.strip.client;
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.dom.client.Style.Cursor;
 
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Component;
+import uk.co.stikman.strip.client.model.ComponentInstance;
 
 public class PlaceComponentCursor extends CursorTool {
-	private final Component	comp;
-	private int				currentHoleX;
-	private int				currentHoleY;
-	private Vector3			downAt;
-	private String			hilightColour;
+	private final Component		comp;
+	private ComponentInstance	inst;
+	private int					currentHoleX;
+	private int					currentHoleY;
+	private Vector3				downAt;
+	private String				hilightColour;
 
 	public PlaceComponentCursor(Component comp) {
 		super();
 		this.comp = comp;
+		inst = new ComponentInstance(comp);
 	}
 
 	@Override
 	public void mouseDown(Vector3 pos, int button) {
 		downAt = new Vector3(pos);
+		inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
+
+		//
+		// update pin positions
+		//
+		inst.updatePinPositions();
 	}
 
 	@Override
 	public void mouseMove(Vector3 pos) {
 		currentHoleX = (int) pos.x;
-		currentHoleY = (int) pos.y; 
+		currentHoleY = (int) pos.y;
+		if (inst.getComponent().isStretchy()) 
+			inst.getPin(1).getPosition().set(currentHoleX, currentHoleY);
 	}
 
 	@Override
@@ -38,7 +50,6 @@ public class PlaceComponentCursor extends CursorTool {
 		int x0 = (int) downAt.x;
 		int y0 = (int) downAt.y;
 		downAt = null;
-
 	}
 
 	@Override
@@ -50,7 +61,7 @@ public class PlaceComponentCursor extends CursorTool {
 			int y0 = (int) downAt.y;
 
 			ctx.setFillStyle(CssColor.make("rgba(255, 255, 255, 0.4)"));
-			ComponentRenderer.render(getApp(), comp, x0, y0, currentHoleX, currentHoleY);
+			ComponentRenderer.render(getApp(), inst, x0, y0);
 
 		} else {
 			ctx.setFillStyle(hilightColour);

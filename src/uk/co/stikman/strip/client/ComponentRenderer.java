@@ -5,13 +5,15 @@ import java.util.Map;
 
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.model.Component;
+import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentType;
 
 public class ComponentRenderer {
 
 	private interface ComponentRendererMethod {
-		void go(RenderIntf ctx, Component comp, int x0, int y0, int x1, int y1);
+		void go(RenderIntf ctx, ComponentInstance comp, int x0, int y0);
 	}
 
 	private static Map<ComponentType, ComponentRendererMethod>	lkp		= new HashMap<>();
@@ -60,18 +62,22 @@ public class ComponentRenderer {
 	 * @param x1
 	 * @param y1
 	 */
-	public static void render(Stripboard app, Component comp, int x0, int y0, int x1, int y1) {
+	public static void render(Stripboard app, ComponentInstance comp, int x0, int y0) {
 		RenderIntf r = app.getRenderer();
-		ComponentRendererMethod m = lkp.get(comp.getType());
+		ComponentRendererMethod m = lkp.get(comp.getComponent().getType());
 		if (m == null)
 			m = ComponentRenderer::missing;
-		m.go(r, comp, x0, y0, x1, y1);
+		m.go(r, comp, x0, y0);
 	}
 
-	private static void missing(RenderIntf ctx, Component comp, int x0, int y0, int x1, int y1) {
+	private static void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
 	}
 
-	private static void resistor(RenderIntf ctx, Component comp, int x0, int y0, int x1, int y1) {
+	private static void resistor(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
+		Vector2i p = comp.getPin(1).getModel().getPosition(); // position in component
+
+		int x1 = p.x + x0;
+		int y1 = p.y + y0;
 
 		ctx.drawPin(x0, y0);
 		if (!(x0 == x1 && y0 == y1)) {

@@ -7,14 +7,18 @@ import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector3;
 
 public class RenderIntf {
-	private Matrix3		view;
-	private Stripboard	app;
-	private Context2d	context;
-	private String		pinColour;
-	private String		leadColour;
-	private Vector3		tmpv	= new Vector3();
-	private Vector3		tmpv2	= new Vector3();
-	private Matrix3		tmpm	= new Matrix3();
+	private static final float	PI2		= 2.0f * 3.14159f;
+	private Matrix3				view;
+	private Stripboard			app;
+	private Context2d			context;
+	private String				pinColour;
+	private String				leadColour;
+	private String				holecolour;
+	private String				breakcolour;
+	private Vector3				tmpv	= new Vector3();
+	private Vector3				tmpv2	= new Vector3();
+	private Vector3				tmpv3	= new Vector3();
+	private Matrix3				tmpm	= new Matrix3();
 
 	public RenderIntf(Matrix3 view, Stripboard app, Context2d context) {
 		super();
@@ -23,6 +27,8 @@ public class RenderIntf {
 		this.context = context;
 		pinColour = app.getTheme().getPinColour().css();
 		leadColour = app.getTheme().getLeadColour().css();
+		breakcolour = app.getTheme().getBrokenHoleColour().css();
+		holecolour = app.getTheme().getHoleColour().css();
 	}
 
 	public final Matrix3 getView() {
@@ -94,6 +100,30 @@ public class RenderIntf {
 		}
 		context.closePath();
 		context.fill();
+	}
+
+	public void drawBreak(int x, int y) {
+		tmpv.set(0.5f, 0.32f, 0); // radius, and unit size for cross
+		Vector3 sizes = view.multiply(tmpv, tmpv3);
+		tmpv.set(x + 0.5f, y + 0.5f, 1);
+		Vector3 v = view.multiply(tmpv, tmpv2);
+		context.beginPath();
+		context.setFillStyle(breakcolour);
+		context.arc(v.x, v.y, sizes.x, 0, PI2);
+		context.fill();
+
+		context.beginPath();
+		context.setStrokeStyle("red");
+		context.setLineWidth(4.0f);
+		float f = sizes.y;
+		context.moveTo(v.x - f, v.y - f);
+		context.lineTo(v.x + f, v.y + f);
+		context.moveTo(v.x - f, v.y + f);
+		context.lineTo(v.x + f, v.y - f);
+		context.stroke();
+
+		context.setFillStyle(holecolour);
+
 	}
 
 }

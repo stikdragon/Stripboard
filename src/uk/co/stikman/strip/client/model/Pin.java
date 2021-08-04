@@ -11,7 +11,7 @@ public class Pin {
 		return owner;
 	}
 
-	public Pin(Component owner, int id) {
+	public Pin(Component owner, int id) { 
 		super();
 		this.owner = owner;
 		this.id = id;

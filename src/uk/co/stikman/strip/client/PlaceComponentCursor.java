@@ -1,5 +1,7 @@
 package uk.co.stikman.strip.client;
 
+import java.util.List;
+
 import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.dom.client.Style.Cursor;
 
@@ -23,7 +25,7 @@ public class PlaceComponentCursor extends CursorTool {
 	}
 
 	private void reset() {
-		inst = new ComponentInstance(comp);		
+		inst = new ComponentInstance(comp);
 	}
 
 	@Override
@@ -41,7 +43,7 @@ public class PlaceComponentCursor extends CursorTool {
 	public void mouseMove(Vector3 pos) {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
-		if (inst.getComponent().isStretchy()) 
+		if (inst.getComponent().isStretchy())
 			inst.getPin(1).getPosition().set(currentHoleX, currentHoleY);
 	}
 
@@ -52,7 +54,7 @@ public class PlaceComponentCursor extends CursorTool {
 		int x0 = (int) downAt.x;
 		int y0 = (int) downAt.y;
 		downAt = null;
-		
+
 		//
 		// check it's not 0 size
 		//
@@ -64,7 +66,7 @@ public class PlaceComponentCursor extends CursorTool {
 				return;
 			}
 		}
-		
+
 		//
 		// add component to the board
 		//
@@ -86,7 +88,7 @@ public class PlaceComponentCursor extends CursorTool {
 		} else {
 			ctx.setFillStyle(hilightColour);
 			ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
-			
+
 			//
 			// draw ghost version
 			//
@@ -110,4 +112,10 @@ public class PlaceComponentCursor extends CursorTool {
 		hilightColour = app.getTheme().getHighlightColour().css();
 	}
 
+	@Override
+	protected void fillActionList(List<ToolUIHint> lst) {
+		super.fillActionList(lst);
+		lst.add(new ToolUIHint("ESC", "Cancel"));
+		lst.add(new ToolUIHint("R", "Rotate"));
+	}
 }

@@ -3,10 +3,16 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>Stripboard Editor</title>
-<script type="text/javascript" language="javascript" src="stripboard/stripboard.nocache.js"></script>
+<script type="text/javascript" language="javascript"
+	src="stripboard/stripboard.nocache.js"></script>
 
 <style>
 .key {
+	margin-top: 12px;
+	margin-bottom: 12px;
+}
+
+.key span {
 	background: linear-gradient(to bottom, #ffffff 0%, #bfbfbf 100%);
 	box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.53);
 	border: 1px solid #919191;
@@ -19,18 +25,25 @@
 .instructions {
 	padding: 4px;
 }
+
+h2 {
+	color: #fff;
+	text-shadow: 0 0 10px #FFFFFF;
+}
 </style>
 
 </head>
 
 <body>
 	<noscript>
-		<div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">Your web browser must have JavaScript enabled in order for this application to display correctly.</div>
+		<div
+			style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">Your
+			web browser must have JavaScript enabled in order for this
+			application to display correctly.</div>
 	</noscript>
 
 	<div style="display: none" id="instructions">
-		Stripboard editor. <span class="key">I</span> to add a component, <span class="key">DEL</span> to delete. <span class="key">X</span> breaks/unbreaks a track.
-		<span class="key">R</span> rotates a component  
+		<h2>Stripboard editor</h2>
 	</div>
 </body>
 </html>

@@ -39,8 +39,7 @@ public class Stripboard implements EntryPoint {
 	public static final float	PI2			= PI * 2;
 
 	private static final int	TOPSIZE		= 64;
-	private static final int	PADDING		= 4;
-	private static final float	STEPSIZE	= PI2 / 100000.0f;
+	private static final int	LEFTSIZE	= 220;
 	private static final float	COPPER_GAP	= 0.15f;
 	private static final float	HOLE_SIZE	= 0.2f;
 
@@ -49,43 +48,57 @@ public class Stripboard implements EntryPoint {
 	private AppTheme			theme		= new AppTheme();
 	private Matrix3				view		= new Matrix3();
 	private ComponentLibrary	library;
-	private Object				c;
 	private CursorTool			currentTool;
 	private Vector3				tmpv		= new Vector3();
 	private Matrix3				inverseView;
 	private RenderIntf			renderer;
 	private boolean				invalid;
+	private ToolPanel toolPanel;
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
 
 		cnv = Canvas.createIfSupported();
 		root.add(cnv);
-		root.setWidgetLeftRight(cnv, 0, Unit.PX, 0, Unit.PX);
+		root.setWidgetLeftRight(cnv, LEFTSIZE, Unit.PX, 0, Unit.PX);
 		root.setWidgetTopBottom(cnv, TOPSIZE, Unit.PX, 0, Unit.PX);
 		cnv.addKeyPressHandler(this::keyPress);
 		cnv.addKeyDownHandler(this::keyDown);
 		cnv.addMouseDownHandler(this::mouseDown);
 		cnv.addMouseMoveHandler(this::mouseMove);
 		cnv.addMouseUpHandler(this::mouseUp);
-		LayoutPanel lp = new LayoutPanel();
-		root.add(lp);
-		root.setWidgetLeftRight(lp, 0, Unit.PX, 0, Unit.PX);
-		root.setWidgetTopHeight(lp, 0, Unit.PX, TOPSIZE, Unit.PX);
 
 		HTML html = new HTML();
 		String s = Document.get().getElementById("instructions").getInnerHTML();
 		html.setHTML(s);
 		html.setStyleName("instructions");
-		lp.add(html);
-		lp.setWidgetLeftRight(html, 0, Unit.PX, 0, Unit.PX);
-		lp.setWidgetTopBottom(html, 0, Unit.PX, 40, Unit.PX);
+		root.add(html);
+		root.setWidgetLeftRight(html, 0, Unit.PX, 0, Unit.PX);
+		root.setWidgetTopHeight(html, 0, Unit.PX, TOPSIZE, Unit.PX);
+
+		toolPanel = new ToolPanel();
+		root.add(toolPanel);
+		root.setWidgetLeftWidth(toolPanel, 0, Unit.PX, LEFTSIZE, Unit.PX);
+		root.setWidgetTopBottom(toolPanel, TOPSIZE, Unit.PX, 0, Unit.PX);
 
 		Window.addResizeHandler(this::resize);
 		Scheduler.get().scheduleDeferred(() -> {
 			resize(null);
 			run(null);
 		});
+	}
+
+	private void run(ClickEvent ev) {
+		library = new ComponentLibrary();
+		library.loadFrom(StripboardResources.INSTANCE.library().getText());
+		renderer = new RenderIntf(view, this, cnv.getContext2d());
+		setTool(new PointerTool());
+		view.makeIdentity();
+		view.scale(16.0f);
+		updateView();
+		board = new Board(64, 64);
+		cnv.setFocus(true);
+		drawBoard(board);
 	}
 
 	private void keyPress(KeyPressEvent ev) {
@@ -96,7 +109,6 @@ public class Stripboard implements EntryPoint {
 				addComponent();
 				return;
 			}
-			
 
 			//
 			// otherwise pass on to the current tool
@@ -107,8 +119,7 @@ public class Stripboard implements EntryPoint {
 				render();
 		}
 	}
-	
-	
+
 	private void keyDown(KeyDownEvent ev) {
 		Util.log("key " + ev.getNativeKeyCode());
 		if (ev.getNativeKeyCode() == 27) { // esc
@@ -182,25 +193,13 @@ public class Stripboard implements EntryPoint {
 		this.currentTool = tool;
 		tool.setApp(this);
 		tool.start();
+		toolPanel.updateFrom(tool);
 		invalidate();
 	}
 
 	private void resize(ResizeEvent ev) {
 		cnv.setCoordinateSpaceWidth(cnv.getOffsetWidth());
 		cnv.setCoordinateSpaceHeight(cnv.getOffsetHeight());
-	}
-
-	private void run(ClickEvent ev) {
-		library = new ComponentLibrary();
-		library.loadFrom(StripboardResources.INSTANCE.library().getText());
-		renderer = new RenderIntf(view, this, cnv.getContext2d());
-		setTool(new PointerTool());
-		view.makeIdentity();
-		view.scale(16.0f);
-		updateView();
-		board = new Board(64, 64);
-		cnv.setFocus(true);
-		drawBoard(board);
 	}
 
 	private void updateView() {
@@ -211,7 +210,7 @@ public class Stripboard implements EntryPoint {
 		String copper = theme.getCopperColour().css();
 		String base = theme.getBoardBaseColour().css();
 		String holecolour = theme.getHoleColour().css();
-		String breakcolour = theme.getBrokenHoleColour().css();
+
 
 		Context2d ctx = cnv.getContext2d();
 		float w = cnv.getOffsetWidth();
@@ -221,36 +220,29 @@ public class Stripboard implements EntryPoint {
 		ctx.setFillStyle(base);
 		CanvasUtil.fillRect(ctx, view, 0, 0, brd.getWidth(), brd.getHeight());
 
-		for (int x = 0; x < brd.getWidth(); ++x) {
+		for (int y = 0; y < brd.getHeight(); ++y) {
 			ctx.setFillStyle(copper);
-			CanvasUtil.fillRect(ctx, view, x + COPPER_GAP, 0, 1.0f - COPPER_GAP * 2.0f, brd.getHeight());
+			CanvasUtil.fillRect(ctx, view, 0, y + COPPER_GAP, brd.getWidth(), 1.0f - COPPER_GAP * 2.0f);
 		}
 
 		ctx.setFillStyle(holecolour);
 		for (int y = 0; y < brd.getHeight(); ++y) {
 			for (int x = 0; x < brd.getWidth(); ++x) {
-
 				Hole hole = brd.getHole(x, y);
 
 				ctx.beginPath();
 				CanvasUtil.circle(ctx, view, x + 0.5f, y + 0.5f, HOLE_SIZE);
 				ctx.fill();
 
-				if (hole.isBroken()) {
-					ctx.setFillStyle(breakcolour);
-					ctx.beginPath();
-					CanvasUtil.circle(ctx, view, x + 0.5f, y + 0.5f, 0.5f);
-					ctx.fill();
-					ctx.setFillStyle(holecolour);
-				}
+				if (hole.isBroken()) 
+					renderer.drawBreak(x, y);
 			}
 		}
-		
+
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
 			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y);
 		}
-		
 
 	}
 

@@ -1,5 +1,7 @@
 package uk.co.stikman.strip.client;
 
+import java.util.List;
+
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Hole;
@@ -48,6 +50,15 @@ public class PointerTool extends CursorTool {
 				getApp().invalidate();
 			}
 		}
+	}
+
+	@Override
+	protected void fillActionList(List<ToolUIHint> lst) {
+		super.fillActionList(lst);
+		lst.add(new ToolUIHint("I", "Add component"));
+		lst.add(new ToolUIHint("DEL", "Delete"));
+		lst.add(new ToolUIHint("X", "Break/Unbreak"));
+		lst.add(new ToolUIHint("R", "Rotate"));
 	}
 
 }

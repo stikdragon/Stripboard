@@ -1,8 +1,11 @@
 package uk.co.stikman.strip.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.co.stikman.strip.client.math.Vector3;
 
-public class CursorTool {
+public abstract class CursorTool {
 
 	private Stripboard app;
 
@@ -37,6 +40,15 @@ public class CursorTool {
 	}
 
 	public void start() {
+	}
+
+	public final List<ToolUIHint> getActions() {
+		List<ToolUIHint> lst = new ArrayList<>();
+		fillActionList(lst);
+		return lst;
+	}
+
+	protected void fillActionList(List<ToolUIHint> lst) {
 	}
 
 }

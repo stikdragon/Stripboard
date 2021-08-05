@@ -12,11 +12,18 @@ public class ComponentLibrary {
 	private Map<String, Component> components = new HashMap<>();
 
 	public void loadFrom(String source) {
+		//
+		// add default Wire type
+		//
+		Component comp = new Component("HIDDEN", "Wire");
+		comp.setType(ComponentType.WIRE);
+		comp.getPins().add(new Pin(comp, 0, 0, 0));
+		comp.getPins().add(new Pin(comp, 0, 0, 0));
+		components.put(comp.getName(), comp);
+
 		Ini ini = new Ini(false, true);
 		ini.parse(source);
-
 		for (Section sect : ini.getSections()) {
-			Component comp;
 			String[] bits = sect.getName().split("/");
 			if (bits.length == 2)
 				comp = new Component(bits[0], bits[1]);
@@ -49,7 +56,7 @@ public class ComponentLibrary {
 				if (k.getName().matches("[0-9]+")) {
 					int n = Integer.parseInt(k.getName());
 					while (n >= comp.getPins().size())
-						comp.getPins().add(new Pin(comp, comp.getPins().size()));  
+						comp.getPins().add(new Pin(comp, comp.getPins().size()));
 					bits = k.getValue().split(",");
 					if (bits.length != 2 && bits.length != 3)
 						throw new IllegalArgumentException("Expected two or three arguments for a pin");
@@ -65,6 +72,13 @@ public class ComponentLibrary {
 
 	public Iterable<Component> getComponents() {
 		return components.values();
+	}
+
+	public Component get(String name) {
+		Component x = components.get(name);
+		if (x == null)
+			throw new NoSuchElementException(name + " not a component");
+		return x;
 	}
 
 }

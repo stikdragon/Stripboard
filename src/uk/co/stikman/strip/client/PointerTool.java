@@ -55,10 +55,11 @@ public class PointerTool extends CursorTool {
 	@Override
 	protected void fillActionList(List<ToolUIHint> lst) {
 		super.fillActionList(lst);
-		lst.add(new ToolUIHint("I", "Add component"));
+		lst.add(new ToolUIHint("I/E", "Add component"));
 		lst.add(new ToolUIHint("DEL", "Delete"));
 		lst.add(new ToolUIHint("X", "Break/Unbreak"));
 		lst.add(new ToolUIHint("R", "Rotate"));
+		lst.add(new ToolUIHint("W", "Add wire"));
 	}
 
 }

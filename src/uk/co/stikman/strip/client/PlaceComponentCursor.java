@@ -17,6 +17,7 @@ public class PlaceComponentCursor extends CursorTool {
 	private int					currentHoleY;
 	private Vector3				downAt;
 	private String				hilightColour;
+	private boolean				placed	= false;
 
 	public PlaceComponentCursor(Component comp) {
 		super();
@@ -26,12 +27,14 @@ public class PlaceComponentCursor extends CursorTool {
 
 	private void reset() {
 		inst = new ComponentInstance(comp);
+		placed = false;
 	}
 
 	@Override
 	public void mouseDown(Vector3 pos, int button) {
 		downAt = new Vector3(pos);
 		inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
+		placed = true;
 
 		//
 		// update pin positions
@@ -77,13 +80,12 @@ public class PlaceComponentCursor extends CursorTool {
 	@Override
 	public void render() {
 		RenderIntf ctx = getApp().getRenderer();
-
 		if (downAt != null) {
 			int x0 = (int) downAt.x;
 			int y0 = (int) downAt.y;
 
 			ctx.setFillStyle(CssColor.make("rgba(255, 255, 255, 0.4)"));
-			ComponentRenderer.render(getApp(), inst, x0, y0);
+			ComponentRenderer.render(getApp(), inst, x0, y0, !placed);
 
 		} else {
 			ctx.setFillStyle(hilightColour);
@@ -92,7 +94,7 @@ public class PlaceComponentCursor extends CursorTool {
 			//
 			// draw ghost version
 			//
-			ComponentRenderer.render(getApp(), inst, currentHoleX, currentHoleY);
+			ComponentRenderer.render(getApp(), inst, currentHoleX, currentHoleY, !placed);
 		}
 	}
 
@@ -115,7 +117,7 @@ public class PlaceComponentCursor extends CursorTool {
 	@Override
 	protected void fillActionList(List<ToolUIHint> lst) {
 		super.fillActionList(lst);
-		lst.add(new ToolUIHint("ESC", "Cancel"));
+		lst.add(new ToolUIHint("ESC/Q", "Cancel"));
 		lst.add(new ToolUIHint("R", "Rotate"));
 	}
 }

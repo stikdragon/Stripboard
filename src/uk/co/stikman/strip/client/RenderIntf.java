@@ -4,7 +4,9 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
 
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
+import uk.co.stikman.strip.client.model.PinInstance;
 
 public class RenderIntf {
 	private static final float	PI2		= 2.0f * 3.14159f;
@@ -13,11 +15,14 @@ public class RenderIntf {
 	private Context2d			context;
 	private String				pinColour;
 	private String				leadColour;
+	private String				wireColour;
 	private String				holecolour;
 	private String				breakcolour;
 	private Vector3				tmpv	= new Vector3();
 	private Vector3				tmpv2	= new Vector3();
 	private Vector3				tmpv3	= new Vector3();
+	private Vector3				tmpv4	= new Vector3();
+	private Vector3				tmpv5	= new Vector3();
 	private Matrix3				tmpm	= new Matrix3();
 
 	public RenderIntf(Matrix3 view, Stripboard app, Context2d context) {
@@ -29,6 +34,8 @@ public class RenderIntf {
 		leadColour = app.getTheme().getLeadColour().css();
 		breakcolour = app.getTheme().getBrokenHoleColour().css();
 		holecolour = app.getTheme().getHoleColour().css();
+		wireColour = app.getTheme().getWireColour().css();
+
 	}
 
 	public final Matrix3 getView() {
@@ -70,7 +77,7 @@ public class RenderIntf {
 		float fx1 = tmpv2.x;
 		float fy1 = tmpv2.y;
 
-		context.setFillStyle(leadColour);
+		context.setStrokeStyle(leadColour);
 		context.setLineWidth(3.0f);
 		context.beginPath();
 		context.moveTo(fx0, fy0);
@@ -124,6 +131,42 @@ public class RenderIntf {
 
 		context.setFillStyle(holecolour);
 
+	}
+
+	public void drawWire(Vector2i a, Vector2i b) {
+		//
+		// draw an inner wire in lead colour, then an outer one that's shorter and fatter
+		//
+		tmpv.set(a.x + 0.5f, a.y + 0.5f, 0);
+		Vector3 va = view.multiply(tmpv, tmpv2);
+		tmpv.set(b.x + 0.5f, b.y + 0.5f, 0);
+		Vector3 vb = view.multiply(tmpv, tmpv3);
+
+		context.setLineWidth(3.0f);
+		context.setStrokeStyle(leadColour);
+		context.beginPath();
+		context.moveTo(va.x, va.y);
+		context.lineTo(vb.x, vb.y);
+		context.stroke();
+
+		//
+		// fat bit
+		//
+		tmpv.set(a.x + 0.5f, a.y + 0.5f, 0);
+		tmpv2.set(b.x + 0.5f, b.y + 0.5f, 0);
+		Vector3 gap = tmpv2.sub(tmpv, tmpv3).normalize().multiply(0.38f); // 0.38 of a hole shorter
+
+		tmpv.set(a.x + 0.5f, a.y + 0.5f, 0).add(gap);
+		va = view.multiply(tmpv, tmpv2);
+		tmpv.set(b.x + 0.5f, b.y + 0.5f, 0).sub(gap);
+		vb = view.multiply(tmpv, tmpv3);
+
+		context.setLineWidth(6.0f);
+		context.setStrokeStyle(wireColour);
+		context.beginPath();
+		context.moveTo(va.x, va.y);
+		context.lineTo(vb.x, vb.y);
+		context.stroke();
 	}
 
 }

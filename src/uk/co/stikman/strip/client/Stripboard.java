@@ -53,7 +53,7 @@ public class Stripboard implements EntryPoint {
 	private Matrix3				inverseView;
 	private RenderIntf			renderer;
 	private boolean				invalid;
-	private ToolPanel toolPanel;
+	private ToolPanel			toolPanel;
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -103,11 +103,15 @@ public class Stripboard implements EntryPoint {
 
 	private void keyPress(KeyPressEvent ev) {
 		try {
-			if ('i' == ev.getCharCode()) {
+			if ('i' == ev.getCharCode() || 'e' == ev.getCharCode()) {
 				if (!(currentTool instanceof PointerTool))
 					setTool(new PointerTool());
 				addComponent();
 				return;
+			}
+
+			if ('w' == ev.getCharCode()) {
+				setTool(new WiringTool(library.get("Wire")));
 			}
 
 			//
@@ -121,8 +125,7 @@ public class Stripboard implements EntryPoint {
 	}
 
 	private void keyDown(KeyDownEvent ev) {
-		Util.log("key " + ev.getNativeKeyCode());
-		if (ev.getNativeKeyCode() == 27) { // esc
+		if (ev.getNativeKeyCode() == 27 || ev.getNativeKeyCode() == 81) { // esc/Q
 			setTool(new PointerTool());
 		}
 		if (invalid)
@@ -169,6 +172,8 @@ public class Stripboard implements EntryPoint {
 		sp.setWidget(vp);
 
 		for (Component c : library.getComponents()) {
+			if (c.getName().equals("Wire")) // wires are a special case
+				continue; 
 			Label l = new Label(c.getName());
 			l.addClickHandler(event -> {
 				dlg.hide();
@@ -193,8 +198,12 @@ public class Stripboard implements EntryPoint {
 		this.currentTool = tool;
 		tool.setApp(this);
 		tool.start();
-		toolPanel.updateFrom(tool);
+		updateToolPanel();
 		invalidate();
+	}
+
+	public void updateToolPanel() {
+		toolPanel.updateFrom(currentTool);
 	}
 
 	private void resize(ResizeEvent ev) {
@@ -210,7 +219,6 @@ public class Stripboard implements EntryPoint {
 		String copper = theme.getCopperColour().css();
 		String base = theme.getBoardBaseColour().css();
 		String holecolour = theme.getHoleColour().css();
-
 
 		Context2d ctx = cnv.getContext2d();
 		float w = cnv.getOffsetWidth();
@@ -234,14 +242,14 @@ public class Stripboard implements EntryPoint {
 				CanvasUtil.circle(ctx, view, x + 0.5f, y + 0.5f, HOLE_SIZE);
 				ctx.fill();
 
-				if (hole.isBroken()) 
+				if (hole.isBroken())
 					renderer.drawBreak(x, y);
 			}
 		}
 
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
-			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y);
+			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y, false);
 		}
 
 	}

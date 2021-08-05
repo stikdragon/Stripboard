@@ -50,6 +50,7 @@ public class Component {
 		case C_DISC:
 		case C_RADIAL:
 		case LED:
+		case WIRE:
 		case R:
 			return true;
 		default:

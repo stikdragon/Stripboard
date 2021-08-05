@@ -11,10 +11,15 @@ public class Pin {
 		return owner;
 	}
 
-	public Pin(Component owner, int id) { 
+	public Pin(Component owner, int id) {
 		super();
 		this.owner = owner;
 		this.id = id;
+	}
+
+	public Pin(Component owner, int id, int x, int y) {
+		this(owner, id);
+		position = new Vector2i(x, y);
 	}
 
 	public final int getId() {

@@ -3,6 +3,8 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.stikman.strip.client.math.Vector2i;
+
 public class Board {
 	private int						width;
 	private int						height;
@@ -25,6 +27,10 @@ public class Board {
 		return height;
 	}
 
+	public Hole getHole(Vector2i v) {
+		return getHole(v.x, v.y);
+	}
+
 	public Hole getHole(int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height)
 			throw new IllegalArgumentException("Hole coord [" + x + ", " + y + "] out of range");
@@ -41,8 +47,9 @@ public class Board {
 
 	public void placeComponent(ComponentInstance inst) {
 		components.add(inst);
-		for (PinInstance p : inst.getPins()) 
+		for (PinInstance p : inst.getPins())
 			getHole(p.getPosition().x, p.getPosition().y).setPin(p);
 	}
+
 
 }

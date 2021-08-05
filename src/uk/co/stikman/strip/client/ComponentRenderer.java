@@ -14,7 +14,7 @@ import uk.co.stikman.strip.client.model.PinInstance;
 public class ComponentRenderer {
 
 	private interface ComponentRendererMethod {
-		void go(RenderIntf ctx, ComponentInstance comp, int x0, int y0);
+		void go(RenderIntf ctx, ComponentInstance comp, int x0, int y0, boolean ghost);
 	}
 
 	private static Map<ComponentType, ComponentRendererMethod>	lkp			= new HashMap<>();
@@ -24,6 +24,7 @@ public class ComponentRenderer {
 	static {
 		lkp.put(ComponentType.R, ComponentRenderer::resistor);
 		lkp.put(ComponentType.IC_DIP, ComponentRenderer::dip);
+		lkp.put(ComponentType.WIRE, ComponentRenderer::wire);
 	}
 
 	//@formatter:off
@@ -62,29 +63,32 @@ public class ComponentRenderer {
 	 * @param comp
 	 * @param x0
 	 * @param y0
+	 * @param ghost
 	 * @param x1
 	 * @param y1
 	 */
-	public static void render(Stripboard app, ComponentInstance comp, int x0, int y0) {
+	public static void render(Stripboard app, ComponentInstance comp, int x0, int y0, boolean ghost) {
 		RenderIntf r = app.getRenderer();
 		ComponentRendererMethod m = lkp.get(comp.getComponent().getType());
 		if (m == null)
 			m = ComponentRenderer::missing;
-		m.go(r, comp, x0, y0);
+		m.go(r, comp, x0, y0, ghost);
 	}
 
-	private static void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
+	private static void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, boolean ghost) {
 	}
 
-	private static void resistor(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
+	private static void resistor(RenderIntf ctx, ComponentInstance comp, int x0, int y0, boolean ghost) {
 		Vector2i p = comp.getPin(1).getPosition(); // position in component
 
 		int x1 = p.x;
 		int y1 = p.y;
 
-		ctx.drawPin(x0, y0);
 		if (!(x0 == x1 && y0 == y1)) {
-			ctx.drawPin(x1, y1);
+			if (!ghost) {
+				ctx.drawPin(x0, y0);
+				ctx.drawPin(x1, y1);
+			}
 
 			float dx = x1 - x0;
 			float dy = y1 - y0;
@@ -107,15 +111,28 @@ public class ComponentRenderer {
 		}
 	}
 
-	private static void dip(RenderIntf ctx, ComponentInstance comp, int x0, int y0) {
+	private static void wire(RenderIntf ctx, ComponentInstance comp, int x0, int y0, boolean ghost) {
+		PinInstance p1 = comp.getPin(0);
+		PinInstance p2 = comp.getPin(1);
+
+		if (!(x0 == p2.getPosition().x && y0 == p2.getPosition().y)) {
+			ctx.drawPin(p1.getPosition().x, p1.getPosition().y);
+			ctx.drawPin(p2.getPosition().x, p2.getPosition().y);
+			ctx.drawWire(p1.getPosition(), p2.getPosition());
+		}
+	}
+
+	private static void dip(RenderIntf ctx, ComponentInstance comp, int x0, int y0, boolean ghost) {
 		//
 		// work out the bounding rect, draw that
 		//
 		Component model = comp.getComponent();
 		Vector2i sz = model.getSize();
 
-		for (PinInstance p : comp.getPins())
-			ctx.drawPin(p.getPosition().x, p.getPosition().y);
+		if (!ghost) {
+			for (PinInstance p : comp.getPins())
+				ctx.drawPin(p.getPosition().x, p.getPosition().y);
+		}
 
 		float[] verts = vertCache.get(model);
 		if (verts == null) {
@@ -125,7 +142,7 @@ public class ComponentRenderer {
 			verts = new float[14];
 			int i = 0;
 			final float SHRINKX = 0.4f; // chip body should be smaller than the pins 
-			final float SHRINKY = 0.1f; 
+			final float SHRINKY = 0.1f;
 			//@formatter:off
 			verts[i++] = SHRINKX;            verts[i++] = SHRINKY;
 			verts[i++] = sz.x / 2.0f - 0.5f; verts[i++] = SHRINKY;

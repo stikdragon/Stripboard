@@ -1,6 +1,7 @@
 package uk.co.stikman.strip.client.model;
 
 public enum ComponentType {
+	WIRE,
 	IC_DIP,
 	R,
 	C_AXIAL,

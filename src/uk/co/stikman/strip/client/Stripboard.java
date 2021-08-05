@@ -1,5 +1,7 @@
 package uk.co.stikman.strip.client;
 
+import java.util.List;
+
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.EntryPoint;
@@ -25,6 +27,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
@@ -54,6 +57,7 @@ public class Stripboard implements EntryPoint {
 	private RenderIntf			renderer;
 	private boolean				invalid;
 	private ToolPanel			toolPanel;
+	private List<ErrorMarker>	errors;
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -173,7 +177,7 @@ public class Stripboard implements EntryPoint {
 
 		for (Component c : library.getComponents()) {
 			if (c.getName().equals("Wire")) // wires are a special case
-				continue; 
+				continue;
 			Label l = new Label(c.getName());
 			l.addClickHandler(event -> {
 				dlg.hide();
@@ -252,6 +256,12 @@ public class Stripboard implements EntryPoint {
 			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y, false);
 		}
 
+		if (errors != null) {
+			for (ErrorMarker em : errors) {
+				Vector2i v = em.getPosition();
+				renderer.drawCircle(v.x + 0.5f, v.y + 0.5f, 0.6f, null, theme.getErrorColour().css());
+			}
+		}
 	}
 
 	public RenderIntf getRenderer() {
@@ -272,5 +282,10 @@ public class Stripboard implements EntryPoint {
 
 	public void invalidate() {
 		this.invalid = true;
+	}
+
+	public void setErrorMarkers(List<ErrorMarker> errors) {
+		this.errors = errors;
+		invalidate();
 	}
 }

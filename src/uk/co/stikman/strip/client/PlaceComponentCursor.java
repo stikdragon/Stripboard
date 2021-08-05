@@ -1,14 +1,16 @@
 package uk.co.stikman.strip.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.dom.client.Style.Cursor;
 
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
+import uk.co.stikman.strip.client.model.Hole;
+import uk.co.stikman.strip.client.model.PinInstance;
 
 public class PlaceComponentCursor extends CursorTool {
 	private final Component		comp;
@@ -46,8 +48,34 @@ public class PlaceComponentCursor extends CursorTool {
 	public void mouseMove(Vector3 pos) {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
-		if (inst.getComponent().isStretchy())
+		if (inst.getComponent().isStretchy()) {
 			inst.getPin(1).getPosition().set(currentHoleX, currentHoleY);
+		} else {
+			inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
+			inst.updatePinPositions();
+		}
+
+		checkPinPositions();
+	}
+
+	/**
+	 * check current pin locations against the board, update the error
+	 * highlights. return <code>true</code> if they're all free,
+	 * <code>false</code> otherwise
+	 */
+	private boolean checkPinPositions() {
+		List<ErrorMarker> errors = new ArrayList<>();
+		for (PinInstance p : inst.getPins()) {
+			Hole h = getApp().getBoard().getHole(p.getPosition());
+			if (h.getPin() != null) {
+				ErrorMarker em = new ErrorMarker();
+				em.setPosition(p.getPosition());
+				errors.add(em);
+			}
+		}
+
+		getApp().setErrorMarkers(errors);
+		return errors.isEmpty();
 	}
 
 	@Override
@@ -80,22 +108,18 @@ public class PlaceComponentCursor extends CursorTool {
 	@Override
 	public void render() {
 		RenderIntf ctx = getApp().getRenderer();
+
+		int x0 = currentHoleX;
+		int y0 = currentHoleY;
+
 		if (downAt != null) {
-			int x0 = (int) downAt.x;
-			int y0 = (int) downAt.y;
-
-			ctx.setFillStyle(CssColor.make("rgba(255, 255, 255, 0.4)"));
-			ComponentRenderer.render(getApp(), inst, x0, y0, !placed);
-
-		} else {
-			ctx.setFillStyle(hilightColour);
-			ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
-
-			//
-			// draw ghost version
-			//
-			ComponentRenderer.render(getApp(), inst, currentHoleX, currentHoleY, !placed);
+			x0 = (int) downAt.x;
+			y0 = (int) downAt.y;
 		}
+
+		ctx.setFillStyle(hilightColour);
+		ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
+		ComponentRenderer.render(getApp(), inst, x0, y0, !placed); // placed determines what state to draw it in
 	}
 
 	@Override

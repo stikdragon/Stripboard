@@ -12,7 +12,10 @@ public class AppTheme {
 	private Colour	highlightColour		= new Colour("FFFFFF50");
 	private Colour	leadColour			= new Colour("202020");
 	private Colour	componentFill		= new Colour("00000080");
+	private Colour	componentOutline	= new Colour("000000E0");
 	private Colour	wireColour			= new Colour("707ff0D1");
+	private Colour	ghostColour			= new Colour("FFFFFF7C");
+	private Colour	errorColour			= new Colour("FF4040");
 
 	public AppTheme() {
 		super();
@@ -52,6 +55,18 @@ public class AppTheme {
 
 	public Colour getWireColour() {
 		return wireColour;
+	}
+
+	public final Colour getComponentOutline() {
+		return componentOutline;
+	}
+
+	public final Colour getGhostColour() {
+		return ghostColour;
+	}
+
+	public final Colour getErrorColour() {
+		return errorColour;
 	}
 
 }

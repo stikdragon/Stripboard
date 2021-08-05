@@ -85,10 +85,8 @@ public class ComponentRenderer {
 		int y1 = p.y;
 
 		if (!(x0 == x1 && y0 == y1)) {
-			if (!ghost) {
-				ctx.drawPin(x0, y0);
-				ctx.drawPin(x1, y1);
-			}
+			ctx.drawPin(x0, y0, ghost);
+			ctx.drawPin(x1, y1, ghost);
 
 			float dx = x1 - x0;
 			float dy = y1 - y0;
@@ -103,7 +101,12 @@ public class ComponentRenderer {
 
 			ctx.drawLead(x0, y0, x1, y1);
 			if (dx * dx + dy * dy >= 3 * 3) { // flat
-				ctx.drawPoly(ctx.getApp().getTheme().getComponentFill().css(), xm, RESISTOR_VERTS);
+				AppTheme th = ctx.getApp().getTheme();
+				if (ghost) {
+					String c = th.getGhostColour().css();
+					ctx.drawPoly(c, c, xm, RESISTOR_VERTS);
+				} else
+					ctx.drawPoly(th.getComponentFill().css(), th.getComponentOutline().css(), xm, RESISTOR_VERTS);
 			} else { // upright
 
 			}
@@ -116,8 +119,8 @@ public class ComponentRenderer {
 		PinInstance p2 = comp.getPin(1);
 
 		if (!(x0 == p2.getPosition().x && y0 == p2.getPosition().y)) {
-			ctx.drawPin(p1.getPosition().x, p1.getPosition().y);
-			ctx.drawPin(p2.getPosition().x, p2.getPosition().y);
+			ctx.drawPin(p1.getPosition().x, p1.getPosition().y, ghost);
+			ctx.drawPin(p2.getPosition().x, p2.getPosition().y, ghost);
 			ctx.drawWire(p1.getPosition(), p2.getPosition());
 		}
 	}
@@ -129,10 +132,8 @@ public class ComponentRenderer {
 		Component model = comp.getComponent();
 		Vector2i sz = model.getSize();
 
-		if (!ghost) {
-			for (PinInstance p : comp.getPins())
-				ctx.drawPin(p.getPosition().x, p.getPosition().y);
-		}
+		for (PinInstance p : comp.getPins())
+			ctx.drawPin(p.getPosition().x, p.getPosition().y, ghost);
 
 		float[] verts = vertCache.get(model);
 		if (verts == null) {
@@ -154,7 +155,12 @@ public class ComponentRenderer {
 			//@formatter:on
 			vertCache.put(model, verts);
 		}
+		AppTheme th = ctx.getApp().getTheme();
 		tmpm.makeTranslation(x0, y0);
-		ctx.drawPoly(ctx.getApp().getTheme().getComponentFill().css(), tmpm, verts);
+		if (ghost) {
+			String c = th.getGhostColour().css();
+			ctx.drawPoly(c, c, tmpm, verts);
+		} else
+			ctx.drawPoly(th.getComponentFill().css(), th.getComponentOutline().css(), tmpm, verts);
 	}
 }

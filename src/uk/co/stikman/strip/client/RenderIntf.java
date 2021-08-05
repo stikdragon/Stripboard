@@ -18,6 +18,7 @@ public class RenderIntf {
 	private String				wireColour;
 	private String				holecolour;
 	private String				breakcolour;
+	private String				ghostColour;
 	private Vector3				tmpv	= new Vector3();
 	private Vector3				tmpv2	= new Vector3();
 	private Vector3				tmpv3	= new Vector3();
@@ -35,7 +36,7 @@ public class RenderIntf {
 		breakcolour = app.getTheme().getBrokenHoleColour().css();
 		holecolour = app.getTheme().getHoleColour().css();
 		wireColour = app.getTheme().getWireColour().css();
-
+		ghostColour = app.getTheme().getGhostColour().css();
 	}
 
 	public final Matrix3 getView() {
@@ -62,9 +63,9 @@ public class RenderIntf {
 		CanvasUtil.fillRect(context, view, x0, y0, x1, y1);
 	}
 
-	public void drawPin(int x, int y) {
+	public void drawPin(int x, int y, boolean ghost) {
 		context.beginPath();
-		context.setFillStyle(pinColour);
+		context.setFillStyle(ghost ? ghostColour : pinColour);
 		CanvasUtil.circle(context, view, x + 0.5f, y + 0.5f, 0.4f);
 		context.fill();
 	}
@@ -85,7 +86,7 @@ public class RenderIntf {
 		context.stroke();
 	}
 
-	public void drawPoly(String fill, Matrix3 xfm, float[] verts) {
+	public void drawPoly(String fill, String stroke, Matrix3 xfm, float[] verts) {
 		Matrix3 m;
 		if (xfm == null) {
 			m = view;
@@ -95,7 +96,6 @@ public class RenderIntf {
 			m = tmpm;
 		}
 		int n = verts.length / 2;
-		context.setFillStyle(fill);
 		context.beginPath();
 		for (int i = 0; i < n; ++i) {
 			tmpv.set(verts[i * 2], verts[i * 2 + 1], 1.0f);
@@ -106,7 +106,16 @@ public class RenderIntf {
 				context.lineTo(tmpv2.x, tmpv2.y);
 		}
 		context.closePath();
-		context.fill();
+
+		if (fill != null) {
+			context.setFillStyle(fill);
+			context.fill();
+		}
+		if (stroke != null) {
+			context.setStrokeStyle(stroke);
+			context.setLineWidth(2.0f);
+			context.stroke();
+		}
 	}
 
 	public void drawBreak(int x, int y) {
@@ -167,6 +176,27 @@ public class RenderIntf {
 		context.moveTo(va.x, va.y);
 		context.lineTo(vb.x, vb.y);
 		context.stroke();
+	}
+
+	public void drawCircle(float x, float y, float radius, String fill, String stroke) {
+		tmpv.set(radius, 0, 0);
+		float r = view.multiply(tmpv, tmpv2).x;
+		tmpv.set(x, y, 1);
+		Vector3 v = view.multiply(tmpv, tmpv2);
+
+		context.beginPath();
+		context.arc(v.x, v.y, r, 0, PI2);
+
+		if (fill != null) {
+			context.setFillStyle(fill);
+			context.fill();
+		}
+		if (stroke != null) {
+			context.setStrokeStyle(stroke);
+			context.setLineWidth(3.0f);
+			context.stroke();
+		}
+
 	}
 
 }

@@ -8,10 +8,6 @@ public class PinInstance {
 	private Vector2i			position	= new Vector2i();
 	private ComponentInstance	owner;
 
-	public final Pin getModel() {
-		return model;
-	}
-
 	public PinInstance(ComponentInstance owner, Pin model, boolean stretchy) {
 		super();
 		this.owner = owner;
@@ -38,6 +34,19 @@ public class PinInstance {
 
 	public final void setPosition(Vector2i position) {
 		this.position.set(position);
+	}
+
+	public final ComponentInstance getComponentInstance() {
+		return owner;
+	}
+
+	/**
+	 * the {@link Pin} in the model for this component
+	 * 
+	 * @return
+	 */
+	public final Pin getModel() {
+		return model;
 	}
 
 }

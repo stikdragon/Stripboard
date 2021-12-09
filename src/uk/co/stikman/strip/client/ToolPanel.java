@@ -21,7 +21,7 @@ public class ToolPanel extends LayoutPanel {
 
 	}
 
-	public void updateFrom(CursorTool tool) {
+	public void updateFrom(AbstractTool tool) {
 		actions.clear();
 		for (ToolUIHint action : tool.getActions())
 			actions.add(new HTML("<div class=\"key\"><span>" + action.getKey() + "</span> " + action.getDesc() + "</div>"));

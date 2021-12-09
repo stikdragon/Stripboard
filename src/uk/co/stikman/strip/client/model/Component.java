@@ -76,4 +76,5 @@ public class Component {
 		}
 		size.set(mx + 1, my + 1);
 	}
+	
 }

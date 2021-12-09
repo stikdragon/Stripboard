@@ -6,7 +6,7 @@ import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 
-public class WiringTool extends PlaceComponentCursor {
+public class WiringTool extends PlaceComponentTool {
 	private int					currentHoleX;
 	private int					currentHoleY;
 	private Vector3				downAt;

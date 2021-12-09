@@ -51,7 +51,7 @@ public class Stripboard implements EntryPoint {
 	private AppTheme			theme		= new AppTheme();
 	private Matrix3				view		= new Matrix3();
 	private ComponentLibrary	library;
-	private CursorTool			currentTool;
+	private AbstractTool			currentTool;
 	private Vector3				tmpv		= new Vector3();
 	private Matrix3				inverseView;
 	private RenderIntf			renderer;
@@ -182,7 +182,7 @@ public class Stripboard implements EntryPoint {
 			l.addClickHandler(event -> {
 				dlg.hide();
 				cnv.setFocus(true);
-				setTool(new PlaceComponentCursor(c));
+				setTool(new PlaceComponentTool(c));
 			});
 			l.addStyleName("sample");
 			vp.add(l);
@@ -196,7 +196,7 @@ public class Stripboard implements EntryPoint {
 		dlg.center();
 	}
 
-	private void setTool(CursorTool tool) {
+	private void setTool(AbstractTool tool) {
 		if (currentTool != null)
 			currentTool.end();
 		this.currentTool = tool;
@@ -253,7 +253,7 @@ public class Stripboard implements EntryPoint {
 
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
-			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y, false);
+			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
 		}
 
 		if (errors != null) {

@@ -12,7 +12,7 @@ import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
 
-public class PlaceComponentCursor extends CursorTool {
+public class PlaceComponentTool extends AbstractTool {
 	private final Component		comp;
 	private ComponentInstance	inst;
 	private int					currentHoleX;
@@ -20,8 +20,9 @@ public class PlaceComponentCursor extends CursorTool {
 	private Vector3				downAt;
 	private String				hilightColour;
 	private boolean				placed	= false;
+	private boolean invalid = false;
 
-	public PlaceComponentCursor(Component comp) {
+	public PlaceComponentTool(Component comp) {
 		super();
 		this.comp = comp;
 		reset();
@@ -30,10 +31,13 @@ public class PlaceComponentCursor extends CursorTool {
 	private void reset() {
 		inst = new ComponentInstance(comp);
 		placed = false;
+		invalid = false;
 	}
 
 	@Override
 	public void mouseDown(Vector3 pos, int button) {
+		if (invalid)
+			return;
 		downAt = new Vector3(pos);
 		inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
 		placed = true;
@@ -55,7 +59,7 @@ public class PlaceComponentCursor extends CursorTool {
 			inst.updatePinPositions();
 		}
 
-		checkPinPositions();
+		invalid = !checkPinPositions();
 	}
 
 	/**
@@ -119,7 +123,13 @@ public class PlaceComponentCursor extends CursorTool {
 
 		ctx.setFillStyle(hilightColour);
 		ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
-		ComponentRenderer.render(getApp(), inst, x0, y0, !placed); // placed determines what state to draw it in
+		
+		RenderState state = placed ? RenderState.GHOST : RenderState.NORMAL;
+		if (invalid)
+			state = RenderState.ERROR;
+		
+		ComponentRenderer.render(getApp(), inst, x0, y0, state); // placed determines what state to draw it in
+		
 	}
 
 	@Override

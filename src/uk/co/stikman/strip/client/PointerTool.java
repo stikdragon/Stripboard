@@ -1,16 +1,34 @@
 package uk.co.stikman.strip.client;
 
+import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.util.ArrayList;
 import java.util.List;
 
+import de.lighti.clipper.Clipper;
+import de.lighti.clipper.ClipperBase;
+import de.lighti.clipper.DefaultClipper;
+import de.lighti.clipper.Path;
+import de.lighti.clipper.Paths;
+import de.lighti.clipper.Clipper.ClipType;
+import de.lighti.clipper.Clipper.PolyType;
+import de.lighti.clipper.Point.LongPoint;
+import de.lighti.clipper.Point.DoublePoint;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
+import uk.co.stikman.strip.client.model.ComponentInstance;
+import uk.co.stikman.strip.client.model.HitResult;
 import uk.co.stikman.strip.client.model.Hole;
+import uk.co.stikman.strip.client.model.Pin;
+import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Util;
 
-public class PointerTool extends CursorTool {
+public class PointerTool extends AbstractTool {
 
 	private int		currentHoleX;
 	private int		currentHoleY;
 	private String	hilightColour;
+	private Object	selected	= null;
 
 	@Override
 	public void mouseDown(Vector3 pos, int button) {
@@ -21,6 +39,16 @@ public class PointerTool extends CursorTool {
 	public void mouseMove(Vector3 pos) {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
+
+		//
+		// see what's near this
+		//
+		List<HitResult> lst = new ArrayList<>();
+		getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
+		if (!lst.isEmpty())
+			selected = lst.get(0).getObject();
+		else
+			selected = null;
 	}
 
 	@Override
@@ -32,6 +60,41 @@ public class PointerTool extends CursorTool {
 		RenderIntf ctx = getApp().getRenderer();
 		ctx.setFillStyle(hilightColour);
 		ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
+
+		if (selected != null) {
+			Util.log("sel: " + selected.getClass().getSimpleName());
+
+			//
+			// highlight the component with a border
+			//
+			ComponentInstance ci = null;
+			if (selected instanceof PinInstance)
+				ci = ((PinInstance) selected).getComponentInstance();
+			else if (selected instanceof ComponentInstance)
+				ci = (ComponentInstance) selected;
+
+			//
+			// draw a border
+			//
+			if (ci != null) {
+				ComponentRenderer.render(getApp(), comp, x0, y0, state);
+			}
+		}
+
+		//		Clipper clipper = new DefaultClipper();
+		//		if (selected != null) {
+		//			Path p = new Path();
+		//			p.add(new LongPoint(0, 0));
+		//			p.add(new LongPoint(0, 0));
+		//			p.add(new LongPoint(0, 0));
+		//			p.add(new LongPoint(0, 0));
+		//			
+		//			clipper.addPath(p, PolyType.SUBJECT, true);
+		//			Paths solution = new Paths();
+		//			clipper.execute(ClipType.UNION, solution);
+		//			
+		//			
+		//		}
 	}
 
 	@Override

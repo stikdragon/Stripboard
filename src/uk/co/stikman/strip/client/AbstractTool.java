@@ -5,7 +5,7 @@ import java.util.List;
 
 import uk.co.stikman.strip.client.math.Vector3;
 
-public abstract class CursorTool {
+public abstract class AbstractTool {
 
 	private Stripboard app;
 

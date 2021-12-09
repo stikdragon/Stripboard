@@ -15,7 +15,7 @@ public class AppTheme {
 	private Colour	componentOutline	= new Colour("000000E0");
 	private Colour	wireColour			= new Colour("707ff0D1");
 	private Colour	ghostColour			= new Colour("FFFFFF7C");
-	private Colour	errorColour			= new Colour("FF4040");
+	private Colour	errorColour			= new Colour("FF4040C0");
 
 	public AppTheme() {
 		super();

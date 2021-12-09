@@ -2,11 +2,11 @@ package uk.co.stikman.strip.client;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
+import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
-import uk.co.stikman.strip.client.model.PinInstance;
 
 public class RenderIntf {
 	private static final float	PI2		= 2.0f * 3.14159f;
@@ -19,6 +19,7 @@ public class RenderIntf {
 	private String				holecolour;
 	private String				breakcolour;
 	private String				ghostColour;
+	private String				errorColour;
 	private Vector3				tmpv	= new Vector3();
 	private Vector3				tmpv2	= new Vector3();
 	private Vector3				tmpv3	= new Vector3();
@@ -37,6 +38,7 @@ public class RenderIntf {
 		holecolour = app.getTheme().getHoleColour().css();
 		wireColour = app.getTheme().getWireColour().css();
 		ghostColour = app.getTheme().getGhostColour().css();
+		errorColour = app.getTheme().getErrorColour().css();
 	}
 
 	public final Matrix3 getView() {
@@ -63,9 +65,20 @@ public class RenderIntf {
 		CanvasUtil.fillRect(context, view, x0, y0, x1, y1);
 	}
 
-	public void drawPin(int x, int y, boolean ghost) {
+	public void drawPin(int x, int y, RenderState state) {
 		context.beginPath();
-		context.setFillStyle(ghost ? ghostColour : pinColour);
+		switch (state) {
+		case ERROR:
+			context.setFillStyle(errorColour);
+			break;
+		case GHOST:
+			context.setFillStyle(ghostColour);
+			break;
+		case NORMAL:
+			context.setFillStyle(pinColour);
+			break;
+
+		}
 		CanvasUtil.circle(context, view, x + 0.5f, y + 0.5f, 0.4f);
 		context.fill();
 	}

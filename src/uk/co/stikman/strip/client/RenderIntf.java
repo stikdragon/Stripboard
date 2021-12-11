@@ -5,8 +5,10 @@ import com.google.gwt.canvas.dom.client.CssColor;
 import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
+import uk.co.stikman.strip.client.util.Colour;
 
 public class RenderIntf {
 	private static final float	PI2		= 2.0f * 3.14159f;
@@ -210,6 +212,30 @@ public class RenderIntf {
 			context.stroke();
 		}
 
+	}
+
+	private static native void setLineDash(Context2d ctx, int[] pattern) /*-{
+		ctx.setLineDash(pattern);
+	}-*/;
+
+	public void drawLine(Colour colour, Vector2 start, Vector2 end, Matrix3 xfm, boolean dotted) {
+		view.multiply(tmpv.set(start.x, start.y, 1.0f), tmpv2);
+		float fx0 = tmpv2.x;
+		float fy0 = tmpv2.y;
+		view.multiply(tmpv.set(end.x, end.y, 1.0f), tmpv2);
+		float fx1 = tmpv2.x;
+		float fy1 = tmpv2.y;
+
+		context.setStrokeStyle(colour.css());
+		context.setLineWidth(3.0f);
+		context.beginPath();
+		if (dotted)
+			setLineDash(context, new int[] { 10, 10 });
+		context.moveTo(fx0, fy0);
+		context.lineTo(fx1, fy1);
+		context.stroke();
+		if (dotted)
+			setLineDash(context, new int[] {});
 	}
 
 }

@@ -1,25 +1,14 @@
 package uk.co.stikman.strip.client;
 
-import java.awt.Polygon;
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.lighti.clipper.Clipper;
-import de.lighti.clipper.ClipperBase;
-import de.lighti.clipper.DefaultClipper;
-import de.lighti.clipper.Path;
-import de.lighti.clipper.Paths;
-import de.lighti.clipper.Clipper.ClipType;
-import de.lighti.clipper.Clipper.PolyType;
-import de.lighti.clipper.Point.LongPoint;
-import de.lighti.clipper.Point.DoublePoint;
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.HitResult;
 import uk.co.stikman.strip.client.model.Hole;
-import uk.co.stikman.strip.client.model.Pin;
 import uk.co.stikman.strip.client.model.PinInstance;
 import uk.co.stikman.strip.client.util.Util;
 
@@ -77,7 +66,8 @@ public class PointerTool extends AbstractTool {
 			// draw a border
 			//
 			if (ci != null) {
-				ComponentRenderer.render(getApp(), comp, x0, y0, state);
+				Vector2i v = ci.getPin(0).getPosition();
+				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE);
 			}
 		}
 

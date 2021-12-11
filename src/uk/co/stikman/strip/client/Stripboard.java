@@ -35,29 +35,30 @@ import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentLibrary;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
-import uk.co.stikman.strip.client.util.Util;
 
 public class Stripboard implements EntryPoint {
-	public static final float	PI			= 3.14159f;
-	public static final float	PI2			= PI * 2;
+	public static final float	PI					= 3.14159f;
+	public static final float	PI2					= PI * 2;
 
-	private static final int	TOPSIZE		= 64;
-	private static final int	LEFTSIZE	= 220;
-	private static final float	COPPER_GAP	= 0.15f;
-	private static final float	HOLE_SIZE	= 0.2f;
+	private static final int	TOPSIZE				= 64;
+	private static final int	LEFTSIZE			= 220;
+	private static final float	COPPER_GAP			= 0.15f;
+	private static final float	HOLE_SIZE			= 0.2f;
+	public static final float	EXPAND_AMOUNT		= 0.4f;
 
 	private Canvas				cnv;
 	private Board				board;
-	private AppTheme			theme		= new AppTheme();
-	private Matrix3				view		= new Matrix3();
+	private AppTheme			theme				= new AppTheme();
+	private Matrix3				view				= new Matrix3();
 	private ComponentLibrary	library;
-	private AbstractTool			currentTool;
-	private Vector3				tmpv		= new Vector3();
+	private AbstractTool		currentTool;
+	private Vector3				tmpv				= new Vector3();
 	private Matrix3				inverseView;
 	private RenderIntf			renderer;
 	private boolean				invalid;
 	private ToolPanel			toolPanel;
 	private List<ErrorMarker>	errors;
+	private ComponentRenderer	componentRenderer	= new ComponentRenderer(this);
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -253,7 +254,7 @@ public class Stripboard implements EntryPoint {
 
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
-			ComponentRenderer.render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
+			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
 		}
 
 		if (errors != null) {
@@ -287,5 +288,9 @@ public class Stripboard implements EntryPoint {
 	public void setErrorMarkers(List<ErrorMarker> errors) {
 		this.errors = errors;
 		invalidate();
+	}
+
+	public final ComponentRenderer getComponentRenderer() {
+		return componentRenderer;
 	}
 }

@@ -128,9 +128,10 @@ public class PlaceComponentTool extends AbstractTool {
 		if (invalid)
 			state = RenderState.ERROR;
 		
-		ComponentRenderer.render(getApp(), inst, x0, y0, state); // placed determines what state to draw it in
+		getRenderer().render(getApp(), inst, x0, y0, state); // placed determines what state to draw it in
 		
 	}
+
 
 	@Override
 	public void start() {

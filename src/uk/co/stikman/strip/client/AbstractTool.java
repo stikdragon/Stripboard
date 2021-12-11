@@ -50,5 +50,10 @@ public abstract class AbstractTool {
 
 	protected void fillActionList(List<ToolUIHint> lst) {
 	}
+	
+	protected ComponentRenderer getRenderer() {
+		return app.getComponentRenderer();
+	}
+
 
 }

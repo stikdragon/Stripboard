@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
@@ -35,6 +36,7 @@ import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentLibrary;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Util;
 
 public class Stripboard implements EntryPoint {
 	public static final float	PI					= 3.14159f;
@@ -59,6 +61,7 @@ public class Stripboard implements EntryPoint {
 	private ToolPanel			toolPanel;
 	private List<ErrorMarker>	errors;
 	private ComponentRenderer	componentRenderer	= new ComponentRenderer(this);
+	private Canvas				boardCanvas;
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -97,7 +100,7 @@ public class Stripboard implements EntryPoint {
 		library = new ComponentLibrary();
 		library.loadFrom(StripboardResources.INSTANCE.library().getText());
 		renderer = new RenderIntf(view, this, cnv.getContext2d());
-		setTool(new PointerTool());
+		setTool(new PointerTool(this));
 		view.makeIdentity();
 		view.scale(16.0f);
 		updateView();
@@ -110,13 +113,13 @@ public class Stripboard implements EntryPoint {
 		try {
 			if ('i' == ev.getCharCode() || 'e' == ev.getCharCode()) {
 				if (!(currentTool instanceof PointerTool))
-					setTool(new PointerTool());
+					setTool(new PointerTool(this));
 				addComponent();
 				return;
 			}
 
 			if ('w' == ev.getCharCode()) {
-				setTool(new WiringTool(library.get("Wire")));
+				setTool(new WiringTool(this, library.get("Wire")));
 			}
 
 			//
@@ -131,13 +134,15 @@ public class Stripboard implements EntryPoint {
 
 	private void keyDown(KeyDownEvent ev) {
 		if (ev.getNativeKeyCode() == 27 || ev.getNativeKeyCode() == 81) { // esc/Q
-			setTool(new PointerTool());
+			setTool(new PointerTool(this));
 		}
 		if (invalid)
 			render();
 	}
 
 	private void mouseDown(MouseDownEvent ev) {
+		if (currentTool == null)
+			return;
 		currentTool.mouseDown(transformMouse(ev), ev.getNativeButton());
 		render();
 	}
@@ -149,11 +154,15 @@ public class Stripboard implements EntryPoint {
 	}
 
 	private void mouseMove(MouseMoveEvent ev) {
+		if (currentTool == null)
+			return;
 		currentTool.mouseMove(transformMouse(ev));
 		render();
 	}
 
 	private void mouseUp(MouseUpEvent ev) {
+		if (currentTool == null)
+			return;
 		currentTool.mouseUp(transformMouse(ev), ev.getNativeButton());
 		render();
 	}
@@ -161,6 +170,8 @@ public class Stripboard implements EntryPoint {
 	private void render() {
 		invalid = false;
 		drawBoard(board);
+		if (currentTool == null)
+			return;
 		currentTool.render();
 	}
 
@@ -183,7 +194,7 @@ public class Stripboard implements EntryPoint {
 			l.addClickHandler(event -> {
 				dlg.hide();
 				cnv.setFocus(true);
-				setTool(new PlaceComponentTool(c));
+				setTool(new PlaceComponentTool(this, c));
 			});
 			l.addStyleName("sample");
 			vp.add(l);
@@ -201,7 +212,6 @@ public class Stripboard implements EntryPoint {
 		if (currentTool != null)
 			currentTool.end();
 		this.currentTool = tool;
-		tool.setApp(this);
 		tool.start();
 		updateToolPanel();
 		invalidate();
@@ -221,32 +231,13 @@ public class Stripboard implements EntryPoint {
 	}
 
 	private void drawBoard(Board brd) {
-		String copper = theme.getCopperColour().css();
-		String base = theme.getBoardBaseColour().css();
-		String holecolour = theme.getHoleColour().css();
+		Canvas cbrd = getBoardCanvas(brd);
 
-		Context2d ctx = cnv.getContext2d();
-		float w = cnv.getOffsetWidth();
-		float h = cnv.getOffsetHeight();
-		ctx.clearRect(0, 0, w, h);
+		cnv.getContext2d().drawImage(cbrd.getCanvasElement(), 0, 0);
 
-		ctx.setFillStyle(base);
-		CanvasUtil.fillRect(ctx, view, 0, 0, brd.getWidth(), brd.getHeight());
-
-		for (int y = 0; y < brd.getHeight(); ++y) {
-			ctx.setFillStyle(copper);
-			CanvasUtil.fillRect(ctx, view, 0, y + COPPER_GAP, brd.getWidth(), 1.0f - COPPER_GAP * 2.0f);
-		}
-
-		ctx.setFillStyle(holecolour);
 		for (int y = 0; y < brd.getHeight(); ++y) {
 			for (int x = 0; x < brd.getWidth(); ++x) {
 				Hole hole = brd.getHole(x, y);
-
-				ctx.beginPath();
-				CanvasUtil.circle(ctx, view, x + 0.5f, y + 0.5f, HOLE_SIZE);
-				ctx.fill();
-
 				if (hole.isBroken())
 					renderer.drawBreak(x, y);
 			}
@@ -263,6 +254,53 @@ public class Stripboard implements EntryPoint {
 				renderer.drawCircle(v.x + 0.5f, v.y + 0.5f, 0.6f, null, theme.getErrorColour().css());
 			}
 		}
+	}
+
+	/**
+	 * generate a second canvas with the stripboard graphic on, since that's
+	 * slow to render. regenerate on board size change (or zoom?)
+	 * 
+	 * @param brd
+	 * @return
+	 */
+	private Canvas getBoardCanvas(Board brd) {
+		if (boardCanvas == null) {
+			String copper = theme.getCopperColour().css();
+			String base = theme.getBoardBaseColour().css();
+			String holecolour = theme.getHoleColour().css();
+
+			boardCanvas = Canvas.createIfSupported();
+			Vector2 v = new Vector2(brd.getWidth(), brd.getHeight());
+			Vector2 v2 = view.multiply(v, new Vector2());
+
+			boardCanvas.setPixelSize((int) v2.x, (int) v2.y);
+			boardCanvas.setCoordinateSpaceWidth((int) v2.x);
+			boardCanvas.setCoordinateSpaceHeight((int) v2.y);
+
+			Context2d ctx = boardCanvas.getContext2d();
+			float w = boardCanvas.getOffsetWidth();
+			float h = boardCanvas.getOffsetHeight();
+			ctx.clearRect(0, 0, w, h);
+			ctx.setFillStyle(base);
+			CanvasUtil.fillRect(ctx, view, 0, 0, brd.getWidth(), brd.getHeight());
+
+			for (int y = 0; y < brd.getHeight(); ++y) {
+				ctx.setFillStyle(copper);
+				CanvasUtil.fillRect(ctx, view, 0, y + COPPER_GAP, brd.getWidth(), 1.0f - COPPER_GAP * 2.0f);
+			}
+
+			ctx.setFillStyle(holecolour);
+			for (int y = 0; y < brd.getHeight(); ++y) {
+				for (int x = 0; x < brd.getWidth(); ++x) {
+					ctx.beginPath();
+					CanvasUtil.circle(ctx, view, x + 0.5f, y + 0.5f, HOLE_SIZE);
+					ctx.fill();
+				}
+			}
+
+		}
+
+		return boardCanvas;
 	}
 
 	public RenderIntf getRenderer() {

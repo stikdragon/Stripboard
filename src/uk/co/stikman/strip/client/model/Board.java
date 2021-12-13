@@ -11,6 +11,7 @@ public class Board {
 	private int						height;
 	private Hole[]					holes;
 	private List<ComponentInstance>	components	= new ArrayList<>();
+	private PolyCache				polyCache	= new PolyCache();
 
 	public Board(int width, int height) {
 		this.width = width;
@@ -73,6 +74,17 @@ public class Board {
 			results.add(hr);
 		}
 
+		//
+		// look for components too
+		//
+		for (ComponentInstance ci : components) {
+
+		}
+
+	}
+
+	public PolyCache getPolyCache() {
+		return polyCache;
 	}
 
 }

@@ -13,8 +13,8 @@ public class WiringTool extends PlaceComponentTool {
 	private String				hilightColour;
 	private ComponentInstance	wire;
 
-	public WiringTool(Component wiretype) {
-		super(wiretype);
+	public WiringTool(Stripboard app, Component wiretype) {
+		super(app, wiretype);
 	}
 
 	@Override

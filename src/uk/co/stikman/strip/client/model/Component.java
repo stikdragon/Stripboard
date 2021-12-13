@@ -5,19 +5,17 @@ import java.util.List;
 
 import uk.co.stikman.strip.client.math.Vector2i;
 
-public class Component {
-	private String			group;
-	private String			name;
-	private String			desc;
-	private ComponentType	type;
-	private List<Pin>		pins	= new ArrayList<>();
-	private Vector2i		size	= null;
+public abstract class Component {
+	private String		group;
+	private String		name;
+	private String		desc;
+	private List<Pin>	pins	= new ArrayList<>();
+	private Vector2i	size	= null;
 
 	public Component(String group, String name) {
 		super();
 		this.group = group;
 		this.name = name;
-
 	}
 
 	public final String getGroup() {
@@ -36,16 +34,10 @@ public class Component {
 		this.desc = desc;
 	}
 
-	public final ComponentType getType() {
-		return type;
-	}
-
-	public final void setType(ComponentType type) {
-		this.type = type;
-	}
+	public abstract ComponentType getType();
 
 	public boolean isStretchy() {
-		switch (type) {
+		switch (getType()) {
 		case C_AXIAL:
 		case C_DISC:
 		case C_RADIAL:
@@ -76,5 +68,16 @@ public class Component {
 		}
 		size.set(mx + 1, my + 1);
 	}
-	
+
+	public abstract boolean containsPoint(ComponentInstance inst, int x0, int y0, int delta);
+
+	/**
+	 * Get the polygons for this component instance. It's not translated by the
+	 * components position, but it is influence by the component's pin positions
+	 * 
+	 * @param inst
+	 * @return
+	 */
+	public abstract List<ComponentPoly> getPolys(ComponentInstance inst);
+
 }

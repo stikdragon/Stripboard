@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2i;
 
 /**
  * pin 0 sets the position of the component, the other pins can either be
@@ -19,9 +20,11 @@ public class ComponentInstance {
 	private List<PinInstance>	pins		= new ArrayList<>();
 	private int					rotation	= 0;				// 0,1,2,3
 	private Matrix3				tmpM		= new Matrix3();
+	private Board				board;
 
-	public ComponentInstance(Component component) {
+	public ComponentInstance(Board board, Component component) {
 		super();
+		this.board = board;
 		this.component = component;
 		for (Pin p : component.getPins())
 			pins.add(new PinInstance(this, p, component.isStretchy()));
@@ -69,4 +72,13 @@ public class ComponentInstance {
 	public final List<PinInstance> getPins() {
 		return pins;
 	}
+
+	public boolean containsPoint(int x0, int y0, int delta) {
+		return getComponent().containsPoint(this, x0, y0, delta);
+	}
+
+	public final Board getBoard() {
+		return board;
+	}
+
 }

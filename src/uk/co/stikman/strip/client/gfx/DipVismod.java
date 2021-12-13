@@ -36,31 +36,6 @@ public class DipVismod implements ComponentVisualModel {
 		return res;
 	}
 
-	private float[] generateVerts(Component model) {
-		Vector2i sz = model.getSize();
-
-		float[] verts = polyCache.get(tKeyTmp.set(model));
-		if (verts == null) {
-			//
-			// generate rect for this one
-			//
-			verts = new float[14];
-			int i = 0;
-			final float SHRINKX = 0.4f; // chip body should be smaller than the pins 
-			final float SHRINKY = 0.1f;
-			//@formatter:off
-				verts[i++] = SHRINKX;            verts[i++] = SHRINKY;
-				verts[i++] = sz.x / 2.0f - 0.5f; verts[i++] = SHRINKY;
-				verts[i++] = sz.x / 2.0f;        verts[i++] = 0.5f;
-				verts[i++] = sz.x / 2.0f + 0.5f; verts[i++] = SHRINKY;
-				verts[i++] = sz.x - SHRINKX;     verts[i++] = SHRINKY;
-				verts[i++] = sz.x - SHRINKX;     verts[i++] = sz.y - SHRINKY;
-				verts[i++] = SHRINKX;            verts[i++] = sz.y - SHRINKY;
-				//@formatter:on
-			polyCache.put(new VertCacheKey(model), verts);
-		}
-		return verts;
-	}
 
 	@Override
 	public void render(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {
@@ -94,5 +69,16 @@ public class DipVismod implements ComponentVisualModel {
 			ctx.drawPoly(null, th.getComponentOutline().css(), tmpm, outline(comp));
 			break;
 		}
+	}
+
+	@Override
+	public boolean contains(ComponentInstance comp, int x0, int y0, int delta) {
+		Vector2i pos = comp.getPin(0).getPosition();
+		Vector2i sz = comp.getComponent().getSize();
+		x0 -= pos.x;
+		y0 -= pos.y;
+		if (x0 >= 0 && y0 >= 0 && x0 <= sz.x && y0 <= sz.y)
+			return true;
+		return false;
 	}
 }

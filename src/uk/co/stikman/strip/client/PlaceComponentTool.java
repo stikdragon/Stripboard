@@ -22,14 +22,15 @@ public class PlaceComponentTool extends AbstractTool {
 	private boolean				placed	= false;
 	private boolean invalid = false;
 
-	public PlaceComponentTool(Component comp) {
-		super();
+	public PlaceComponentTool(Stripboard app, Component comp) {
+		super(app);
+		this.hilightColour = app.getTheme().getHighlightColour().css();
 		this.comp = comp;
 		reset();
 	}
 
 	private void reset() {
-		inst = new ComponentInstance(comp);
+		inst = new ComponentInstance(getApp().getBoard(), comp);
 		placed = false;
 		invalid = false;
 	}
@@ -143,11 +144,6 @@ public class PlaceComponentTool extends AbstractTool {
 		getApp().setCursor(Cursor.DEFAULT);
 	}
 
-	@Override
-	public void setApp(Stripboard app) {
-		super.setApp(app);
-		hilightColour = app.getTheme().getHighlightColour().css();
-	}
 
 	@Override
 	protected void fillActionList(List<ToolUIHint> lst) {

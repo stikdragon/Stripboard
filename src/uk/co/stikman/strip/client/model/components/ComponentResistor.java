@@ -1,0 +1,125 @@
+package uk.co.stikman.strip.client.model.components;
+
+import java.util.List;
+
+import uk.co.stikman.strip.client.AppTheme;
+import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2;
+import uk.co.stikman.strip.client.math.Vector2i;
+import uk.co.stikman.strip.client.model.Board;
+import uk.co.stikman.strip.client.model.Component;
+import uk.co.stikman.strip.client.model.ComponentInstance;
+import uk.co.stikman.strip.client.model.ComponentPoly;
+import uk.co.stikman.strip.client.model.ComponentPolyType;
+import uk.co.stikman.strip.client.model.ComponentType;
+import uk.co.stikman.strip.client.model.PolyCache;
+
+public class ComponentResistor extends Component {
+
+	//@formatter:off
+	private static float[] RESISTOR_VERTS = new float[] {
+			-17,2,		
+			-15,5,
+			-12,6,
+			-7,6,
+			-4,4,
+			0,4,
+			4,4,
+			7,6,
+			12,6,
+			15,5,
+			17,2,
+			17,-1,
+			15,-4,
+			12,-5,
+			7,-5,
+			4,-3,
+			0,-3,
+			-4,-3,
+			-7,-5,
+			-12,-5,
+			-15,-4,
+			-17,-1	
+	};
+	//@formatter:on
+
+	private static final Matrix3	tmpm			= new Matrix3();
+	private static final float		SCALE_FACTOR	= 3.0f / 34.0f;	// the coordinates for the resistor i drew are far too big
+
+	static {
+		for (int i = 0; i < RESISTOR_VERTS.length; ++i)
+			RESISTOR_VERTS[i] *= SCALE_FACTOR;
+		// :)
+	}
+
+	public ComponentResistor(String group, String name) {
+		super(group, name);
+	}
+
+	@Override
+	public ComponentType getType() {
+		return ComponentType.R;
+	}
+
+	@Override
+	public boolean containsPoint(ComponentInstance inst, int x0, int y0, int delta) {
+		return false;
+	}
+
+	@Override
+	public List<ComponentPoly> getPolys(ComponentInstance inst) {
+		Board brd = inst.getBoard();
+
+		PolyCache cache = brd.getPolyCache();
+		List<ComponentPoly> polys = cache.get(inst);
+		if (polys == null) {
+			Vector2 p0 = new Vector2(inst.getPin(0).getPosition());
+			Vector2 p1 = new Vector2(inst.getPin(1).getPosition());
+			float dx = p1.x - p0.x;
+			float dy = p1.y - p0.y;
+
+			Matrix3 xm = tmpm.makeIdentity();
+			xm.translate(0.5f + (p0.x + p1.x) / 2.0f, 0.5f + (p0.y + p1.y) / 2.0f); // in middle of lead
+
+			float mu = (float) Math.sqrt(dx * dx + dy * dy);
+			if (mu > 0.0f)
+				xm.rotate(dy / mu, dx / mu); // normalise for rotation vector
+
+			//
+			// generate poly for body
+			//
+			Vector2 v = new Vector2();
+			Vector2 out = new Vector2();
+			float[] verts = new float[RESISTOR_VERTS.length];
+			for (int i = 0; i < RESISTOR_VERTS.length; i += 2) {
+				v.set(RESISTOR_VERTS[i], RESISTOR_VERTS[i + 1]);
+				xm.multiply(v, out);
+				verts[i] = out.x;
+				verts[i + 1] = out.y;
+			}
+			polys.add(new ComponentPoly(ComponentPolyType.CLOSED, verts));
+
+			//
+			// so leg from p1->[10,11]  and [32,33]->p0
+			//
+			float[] leg = new float[4];
+			leg[0] = p1.x;
+			leg[1] = p1.y;
+			leg[2] = verts[10];
+			leg[3] = verts[11];
+			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
+
+			leg = new float[4];
+			leg[0] = verts[32];
+			leg[1] = verts[33];
+			leg[2] = p0.x;
+			leg[3] = p0.y;
+			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
+
+			cache.put(inst, polys);
+		}
+
+		return polys;
+	}
+
+}

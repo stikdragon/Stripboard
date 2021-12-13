@@ -1,6 +1,7 @@
 package uk.co.stikman.strip.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.lighti.clipper.Clipper.EndType;
@@ -15,9 +16,8 @@ import uk.co.stikman.strip.client.gfx.ResistorVismod;
 import uk.co.stikman.strip.client.gfx.WireVismod;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
-import uk.co.stikman.strip.client.math.Vector2i;
-import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
+import uk.co.stikman.strip.client.model.ComponentPoly;
 import uk.co.stikman.strip.client.model.ComponentType;
 import uk.co.stikman.strip.client.model.PinInstance;
 
@@ -57,11 +57,41 @@ public class ComponentRenderer {
 	 */
 	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state) {
 		RenderIntf ctx = app.getRenderer();
-		ComponentVisualModel m = lkp.get(comp.getComponent().getType());
-		if (m == null)
+		List<ComponentPoly> polys = comp.getComponent().getPolys();
+		if (polys == null || polys.isEmpty()) {
 			missing(ctx, comp, x0, y0, state);
-		else
-			m.render(ctx, comp, x0, y0, state);
+		} else {
+			tmpm.makeTranslation(x0, y0);
+
+			for (PinInstance pin : comp.getPins())
+				ctx.drawPin(pin.getPosition().x, pin.getPosition().y, state);
+
+			for (ComponentPoly p : polys) {
+				switch (p.getType()) {
+				case CLOSED:
+					ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
+					break;
+
+				case OPEN:
+					// 
+					// a line (or lead maybe?)
+					//
+					float[] a = p.getVerts();
+					ctx.drawLead((int) a[0], (int) a[1], (int) a[2], (int) a[3]);
+					break;
+				}
+			}
+
+		}
+
+//		ComponentVisualModel m = lkp.get(comp.getComponent().getType());
+//		if (m == null)
+//			missing(ctx, comp, x0, y0, state);
+//		else {
+//
+//			m.render(ctx, comp, x0, y0, state);
+//
+//		}
 	}
 
 	private void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {

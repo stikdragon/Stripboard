@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import uk.co.stikman.strip.client.model.components.ComponentCapacitor;
+import uk.co.stikman.strip.client.model.components.ComponentDip;
+import uk.co.stikman.strip.client.model.components.ComponentResistor;
+import uk.co.stikman.strip.client.model.components.ComponentWire;
 import uk.co.stikman.strip.client.util.Ini;
 import uk.co.stikman.strip.client.util.IniPair;
 import uk.co.stikman.strip.client.util.Section;
@@ -15,8 +19,7 @@ public class ComponentLibrary {
 		//
 		// add default Wire type
 		//
-		Component comp = new Component("HIDDEN", "Wire");
-		comp.setType(ComponentType.WIRE);
+		Component comp = new ComponentWire("HIDDEN", "Wire");
 		comp.getPins().add(new Pin(comp, 0, 0, 0));
 		comp.getPins().add(new Pin(comp, 0, 0, 0));
 		components.put(comp.getName(), comp);
@@ -24,12 +27,6 @@ public class ComponentLibrary {
 		Ini ini = new Ini(false, true);
 		ini.parse(source);
 		for (Section sect : ini.getSections()) {
-			String[] bits = sect.getName().split("/");
-			if (bits.length == 2)
-				comp = new Component(bits[0], bits[1]);
-			else
-				comp = new Component(null, bits[0]);
-
 			//@formatter:off
 			ComponentType typ;
 			String s = sect.get("type");
@@ -45,9 +42,28 @@ public class ComponentLibrary {
 			default: throw new NoSuchElementException("Component type [" + s + "] not recognised");
 			}
 			//@formatter:on
-
-			comp.setType(typ);
-
+			
+			
+			String[] bits = sect.getName().split("/");
+			String grup = bits.length == 2 ? bits[0] : null;
+			String name = bits.length == 2 ? bits[1] : bits[0];
+			
+			switch (typ) {
+			case IC_DIP:
+				comp =new ComponentDip(grup, name);  
+				break;
+			case R:
+				comp = new ComponentResistor(grup, name);
+				break;
+			case C_AXIAL:
+			case C_RADIAL:
+			case C_DISC:
+				comp = new ComponentCapacitor(grup, name, typ);
+				break;
+			default:
+				throw new NoSuchElementException("component type [" + typ + "] not supported");
+			}
+			
 			comp.setDesc(comp.getName());
 			if (sect.containsKey("desc"))
 				comp.setDesc(sect.get("desc"));

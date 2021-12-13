@@ -102,4 +102,10 @@ public class ResistorVismod implements ComponentVisualModel {
 		}
 
 	}
+	
+	@Override
+	public boolean contains(ComponentInstance comp, int x0, int y0, int delta) {
+		return false;
+	}
+	
 }

@@ -7,7 +7,11 @@ import uk.co.stikman.strip.client.math.Vector3;
 
 public abstract class AbstractTool {
 
-	private Stripboard app;
+	private final Stripboard app;
+
+	public AbstractTool(Stripboard app) {
+		this.app = app;
+	}
 
 	public void mouseDown(Vector3 pos, int button) {
 
@@ -22,10 +26,6 @@ public abstract class AbstractTool {
 	}
 
 	public void keyPress(char ch) {
-	}
-
-	public void setApp(Stripboard app) {
-		this.app = app;
 	}
 
 	public final Stripboard getApp() {

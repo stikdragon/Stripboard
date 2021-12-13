@@ -25,6 +25,11 @@ public class Vector2 {
 		this((float) x, (float) y);
 	}
 
+	public Vector2(Vector2i copy) {
+		this.x = copy.x;
+		this.y = copy.y;
+	}
+
 	public final float length() {
 		return (float) Math.sqrt((x * x) + (y * y));
 	}
@@ -96,6 +101,10 @@ public class Vector2 {
 
 	public final float dot(float vx, float vy) {
 		return vx * x + vy * y;
+	}
+	
+	public final float dot(Vector2 v) {
+		return v.x * x + v.y * y;
 	}
 
 	public final Vector2 set(float x, float y) {
@@ -270,6 +279,12 @@ public class Vector2 {
 	public Vector2 subLocal(Vector2 dv) {
 		x -= dv.x;
 		y -= dv.y;
+		return this;
+	}
+
+	public Vector2 set(Vector2i vi) {
+		x = vi.x;
+		y = vi.y;
 		return this;
 	}
 

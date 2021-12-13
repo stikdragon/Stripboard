@@ -19,6 +19,11 @@ public class PointerTool extends AbstractTool {
 	private String	hilightColour;
 	private Object	selected	= null;
 
+	public PointerTool(Stripboard app) {
+		super(app);
+		hilightColour = app.getTheme().getHighlightColour().css();
+	}
+
 	@Override
 	public void mouseDown(Vector3 pos, int button) {
 
@@ -47,8 +52,10 @@ public class PointerTool extends AbstractTool {
 	@Override
 	public void render() {
 		RenderIntf ctx = getApp().getRenderer();
-		ctx.setFillStyle(hilightColour);
-		ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
+		if (getApp().getBoard().isValidCoord(currentHoleX, currentHoleY)) {
+			ctx.setFillStyle(hilightColour);
+			ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
+		}
 
 		if (selected != null) {
 			Util.log("sel: " + selected.getClass().getSimpleName());
@@ -87,11 +94,6 @@ public class PointerTool extends AbstractTool {
 		//		}
 	}
 
-	@Override
-	public void setApp(Stripboard app) {
-		super.setApp(app);
-		hilightColour = app.getTheme().getHighlightColour().css();
-	}
 
 	@Override
 	public void keyPress(char ch) {

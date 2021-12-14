@@ -70,26 +70,27 @@ public class RenderIntf {
 	public void drawPin(int x, int y, RenderState state) {
 		context.beginPath();
 		switch (state) {
-		case ERROR:
-			context.setFillStyle(errorColour);
-			break;
-		case GHOST:
-			context.setFillStyle(ghostColour);
-			break;
-		case NORMAL:
-			context.setFillStyle(pinColour);
-			break;
+			case ERROR:
+				context.setFillStyle(errorColour);
+				break;
+			case GHOST:
+				context.setFillStyle(ghostColour);
+				break;
+			case NORMAL:
+				context.setFillStyle(pinColour);
+				break;
 
 		}
 		CanvasUtil.circle(context, view, x + 0.5f, y + 0.5f, 0.4f);
 		context.fill();
 	}
 
-	public void drawLead(int x0, int y0, int x1, int y1) {
-		view.multiply(tmpv.set(x0 + 0.5f, y0 + 0.5f, 1.0f), tmpv2);
+	public void drawLead(float x0, float y0, float x1, float y1, Matrix3 xfm) {
+		Matrix3 m = getTransformView(xfm);
+		m.multiply(tmpv.set(x0, y0, 1.0f), tmpv2);
 		float fx0 = tmpv2.x;
 		float fy0 = tmpv2.y;
-		view.multiply(tmpv.set(x1 + 0.5f, y1 + 0.5f, 1.0f), tmpv2);
+		m.multiply(tmpv.set(x1, y1, 1.0f), tmpv2);
 		float fx1 = tmpv2.x;
 		float fy1 = tmpv2.y;
 
@@ -102,14 +103,7 @@ public class RenderIntf {
 	}
 
 	public void drawPoly(String fill, String stroke, Matrix3 xfm, float[] verts) {
-		Matrix3 m;
-		if (xfm == null) {
-			m = view;
-		} else {
-			tmpm.copy(view);
-			tmpm.multiply(xfm);
-			m = tmpm;
-		}
+		Matrix3 m = getTransformView(xfm);
 		int n = verts.length / 2;
 		context.beginPath();
 		for (int i = 0; i < n; ++i) {
@@ -130,6 +124,22 @@ public class RenderIntf {
 			context.setStrokeStyle(stroke);
 			context.setLineWidth(2.0f);
 			context.stroke();
+		}
+	}
+
+	/**
+	 * uses <code>tmpm</code>
+	 * 
+	 * @param xfm
+	 * @return
+	 */
+	private Matrix3 getTransformView(Matrix3 xfm) {
+		if (xfm == null) {
+			return view;
+		} else {
+			tmpm.copy(view);
+			tmpm.multiply(xfm);
+			return tmpm;
 		}
 	}
 

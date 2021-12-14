@@ -15,4 +15,8 @@ public class PolyCache {
 		map.put(inst, polys);
 	}
 
+	public void remove(ComponentInstance inst) {
+		map.remove(inst);
+	}
+
 }

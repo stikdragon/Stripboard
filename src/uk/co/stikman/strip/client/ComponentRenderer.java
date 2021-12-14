@@ -10,32 +10,20 @@ import de.lighti.clipper.ClipperOffset;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
 import de.lighti.clipper.Point.LongPoint;
-import uk.co.stikman.strip.client.gfx.ComponentVisualModel;
-import uk.co.stikman.strip.client.gfx.DipVismod;
-import uk.co.stikman.strip.client.gfx.ResistorVismod;
-import uk.co.stikman.strip.client.gfx.WireVismod;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentPoly;
-import uk.co.stikman.strip.client.model.ComponentType;
 import uk.co.stikman.strip.client.model.PinInstance;
 
 public class ComponentRenderer {
 
-	private Map<ComponentType, ComponentVisualModel>	lkp			= new HashMap<>();
-	private Map<VertCacheKey, float[]>					polyCache	= new HashMap<>();
-	private Stripboard									app;
-	private AppTheme									theme;
-	private static final Matrix3						tmpm		= new Matrix3();
-	private static final Vector2						tv1			= new Vector2();
-	private static final Vector2						tv2			= new Vector2();
-
-	{
-		lkp.put(ComponentType.R, new ResistorVismod(this));
-		lkp.put(ComponentType.IC_DIP, new DipVismod(this));
-		lkp.put(ComponentType.WIRE, new WireVismod(this));
-	}
+	private Map<VertCacheKey, float[]>	polyCache	= new HashMap<>();
+	private Stripboard					app;
+	private AppTheme					theme;
+	private static final Matrix3		tmpm		= new Matrix3();
+	private static final Vector2		tv1			= new Vector2();
+	private static final Vector2		tv2			= new Vector2();
 
 	public ComponentRenderer(Stripboard app) {
 		this.app = app;
@@ -43,8 +31,8 @@ public class ComponentRenderer {
 	}
 
 	/**
-	 * it's valid to pass x1==x0 and y1==y0, which might mean the component
-	 * isn't rendered at all (eg. it's a resistor that needs dragging first)
+	 * it's valid to pass x1==x0 and y1==y0, which might mean the component isn't
+	 * rendered at all (eg. it's a resistor that needs dragging first)
 	 * 
 	 * @param ctx
 	 * @param view
@@ -57,7 +45,8 @@ public class ComponentRenderer {
 	 */
 	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state) {
 		RenderIntf ctx = app.getRenderer();
-		List<ComponentPoly> polys = comp.getComponent().getPolys();
+
+		List<ComponentPoly> polys = comp.getComponent().getPolys(comp);
 		if (polys == null || polys.isEmpty()) {
 			missing(ctx, comp, x0, y0, state);
 		} else {
@@ -68,30 +57,21 @@ public class ComponentRenderer {
 
 			for (ComponentPoly p : polys) {
 				switch (p.getType()) {
-				case CLOSED:
-					ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
-					break;
+					case CLOSED:
+						ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
+						break;
 
-				case OPEN:
-					// 
-					// a line (or lead maybe?)
-					//
-					float[] a = p.getVerts();
-					ctx.drawLead((int) a[0], (int) a[1], (int) a[2], (int) a[3]);
-					break;
+					case OPEN:
+						// 
+						// a line (or lead maybe?)
+						//
+						float[] a = p.getVerts();
+						ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
+						break;
 				}
 			}
 
 		}
-
-//		ComponentVisualModel m = lkp.get(comp.getComponent().getType());
-//		if (m == null)
-//			missing(ctx, comp, x0, y0, state);
-//		else {
-//
-//			m.render(ctx, comp, x0, y0, state);
-//
-//		}
 	}
 
 	private void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {

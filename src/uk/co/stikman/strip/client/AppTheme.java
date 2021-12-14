@@ -10,7 +10,7 @@ public class AppTheme {
 	private Colour	brokenHoleColour	= new Colour("FFFFFF7C");
 	private Colour	pinColour			= new Colour("50EE527C");
 	private Colour	highlightColour		= new Colour("FFFFFF50");
-	private Colour	leadColour			= new Colour("202020");
+	private Colour	leadColour			= new Colour("404047");
 	private Colour	componentFill		= new Colour("00000080");
 	private Colour	componentOutline	= new Colour("000000E0");
 	private Colour	wireColour			= new Colour("707ff0D1");

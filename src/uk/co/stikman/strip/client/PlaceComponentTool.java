@@ -5,12 +5,15 @@ import java.util.List;
 
 import com.google.gwt.dom.client.Style.Cursor;
 
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
+import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Util;
 
 public class PlaceComponentTool extends AbstractTool {
 	private final Component		comp;
@@ -20,7 +23,7 @@ public class PlaceComponentTool extends AbstractTool {
 	private Vector3				downAt;
 	private String				hilightColour;
 	private boolean				placed	= false;
-	private boolean invalid = false;
+	private boolean				invalid	= false;
 
 	public PlaceComponentTool(Stripboard app, Component comp) {
 		super(app);
@@ -64,9 +67,8 @@ public class PlaceComponentTool extends AbstractTool {
 	}
 
 	/**
-	 * check current pin locations against the board, update the error
-	 * highlights. return <code>true</code> if they're all free,
-	 * <code>false</code> otherwise
+	 * check current pin locations against the board, update the error highlights.
+	 * return <code>true</code> if they're all free, <code>false</code> otherwise
 	 */
 	private boolean checkPinPositions() {
 		List<ErrorMarker> errors = new ArrayList<>();
@@ -124,15 +126,20 @@ public class PlaceComponentTool extends AbstractTool {
 
 		ctx.setFillStyle(hilightColour);
 		ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
-		
+
 		RenderState state = placed ? RenderState.GHOST : RenderState.NORMAL;
 		if (invalid)
 			state = RenderState.ERROR;
-		
-		getRenderer().render(getApp(), inst, x0, y0, state); // placed determines what state to draw it in
-		
-	}
 
+		//
+		// remove it from the poly cache so it's forced to regenerate each frame
+		//
+		getApp().getBoard().getPolyCache().remove(inst);
+
+		Vector2i p = inst.getPin(0).getPosition();
+		getRenderer().render(getApp(), inst, p.x, p.y, state); // placed determines what state to draw it in
+
+	}
 
 	@Override
 	public void start() {
@@ -143,7 +150,6 @@ public class PlaceComponentTool extends AbstractTool {
 	public void end() {
 		getApp().setCursor(Cursor.DEFAULT);
 	}
-
 
 	@Override
 	protected void fillActionList(List<ToolUIHint> lst) {

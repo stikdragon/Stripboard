@@ -1,5 +1,6 @@
 package uk.co.stikman.strip.client.model.components;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.stikman.strip.client.AppTheme;
@@ -18,6 +19,7 @@ public class ComponentResistor extends Component {
 
 	//@formatter:off
 	private static float[] RESISTOR_VERTS = new float[] {
+			-17,0,		
 			-17,2,		
 			-15,5,
 			-12,6,
@@ -29,6 +31,7 @@ public class ComponentResistor extends Component {
 			12,6,
 			15,5,
 			17,2,
+			17,0,
 			17,-1,
 			15,-4,
 			12,-5,
@@ -79,11 +82,13 @@ public class ComponentResistor extends Component {
 			float dy = p1.y - p0.y;
 
 			Matrix3 xm = tmpm.makeIdentity();
-			xm.translate(0.5f + (p0.x + p1.x) / 2.0f, 0.5f + (p0.y + p1.y) / 2.0f); // in middle of lead
+			xm.translate(0.5f + dx / 2.0f, 0.5f + dy / 2.0f); // in middle of lead
 
 			float mu = (float) Math.sqrt(dx * dx + dy * dy);
 			if (mu > 0.0f)
 				xm.rotate(dy / mu, dx / mu); // normalise for rotation vector
+
+			polys = new ArrayList<>();
 
 			//
 			// generate poly for body
@@ -100,20 +105,20 @@ public class ComponentResistor extends Component {
 			polys.add(new ComponentPoly(ComponentPolyType.CLOSED, verts));
 
 			//
-			// so leg from p1->[10,11]  and [32,33]->p0
+			// so leg from p1->[0,1]  and [24,25]->p0
 			//
 			float[] leg = new float[4];
-			leg[0] = p1.x;
-			leg[1] = p1.y;
-			leg[2] = verts[10];
-			leg[3] = verts[11];
+			leg[0] = dx + 0.5f;
+			leg[1] = dy + 0.5f;
+			leg[2] = verts[24];
+			leg[3] = verts[25];
 			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
 
 			leg = new float[4];
-			leg[0] = verts[32];
-			leg[1] = verts[33];
-			leg[2] = p0.x;
-			leg[3] = p0.y;
+			leg[0] = verts[0];
+			leg[1] = verts[1];
+			leg[2] = 0.5f;
+			leg[3] = 0.5f;
 			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
 
 			cache.put(inst, polys);

@@ -114,6 +114,8 @@ public class PlaceComponentTool extends AbstractTool {
 
 	@Override
 	public void render() {
+		if (downAt == null)
+			return;
 		RenderIntf ctx = getApp().getRenderer();
 
 		int x0 = currentHoleX;

@@ -80,11 +80,17 @@ public class ComponentResistor extends Component {
 			Vector2 p1 = new Vector2(inst.getPin(1).getPosition());
 			float dx = p1.x - p0.x;
 			float dy = p1.y - p0.y;
+			float mu = (float) Math.sqrt(dx * dx + dy * dy);
+			float udx = 0;
+			float udy = 0;
+			if (mu > 0.0f) {
+				udx = dx / mu;
+				udy = dy / mu;
+			}
 
 			Matrix3 xm = tmpm.makeIdentity();
 			xm.translate(0.5f + dx / 2.0f, 0.5f + dy / 2.0f); // in middle of lead
 
-			float mu = (float) Math.sqrt(dx * dx + dy * dy);
 			if (mu > 0.0f)
 				xm.rotate(dy / mu, dx / mu); // normalise for rotation vector
 
@@ -110,13 +116,13 @@ public class ComponentResistor extends Component {
 			float[] leg = new float[4];
 			leg[0] = dx + 0.5f;
 			leg[1] = dy + 0.5f;
-			leg[2] = verts[24];
-			leg[3] = verts[25];
+			leg[2] = verts[24] - udx * 0.1f;
+			leg[3] = verts[25] - udy * 0.1f;
 			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
 
 			leg = new float[4];
-			leg[0] = verts[0];
-			leg[1] = verts[1];
+			leg[0] = verts[0] + udx * 0.1f;
+			leg[1] = verts[1] + udy * 0.1f;
 			leg[2] = 0.5f;
 			leg[3] = 0.5f;
 			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));

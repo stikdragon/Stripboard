@@ -58,7 +58,6 @@ public class PointerTool extends AbstractTool {
 		}
 
 		if (selected != null) {
-			Util.log("sel: " + selected.getClass().getSimpleName());
 
 			//
 			// highlight the component with a border

@@ -254,6 +254,10 @@ public class Stripboard implements EntryPoint {
 				renderer.drawCircle(v.x + 0.5f, v.y + 0.5f, 0.6f, null, theme.getErrorColour().css());
 			}
 		}
+		
+		//
+		// render selected items
+		//
 	}
 
 	/**

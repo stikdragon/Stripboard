@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.lighti.clipper.Clipper;
+import de.lighti.clipper.Clipper.ClipType;
 import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
+import de.lighti.clipper.Clipper.PolyType;
 import de.lighti.clipper.ClipperOffset;
+import de.lighti.clipper.DefaultClipper;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
 import de.lighti.clipper.Point.LongPoint;
@@ -14,6 +18,7 @@ import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentPoly;
+import uk.co.stikman.strip.client.model.ComponentPolyType;
 import uk.co.stikman.strip.client.model.PinInstance;
 
 public class ComponentRenderer {
@@ -55,23 +60,73 @@ public class ComponentRenderer {
 			for (PinInstance pin : comp.getPins())
 				ctx.drawPin(pin.getPosition().x, pin.getPosition().y, state);
 
-			for (ComponentPoly p : polys) {
-				switch (p.getType()) {
-					case CLOSED:
-						ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
-						break;
+			if (state == RenderState.OUTLINE) {
+				//
+				// generate a union poly, then an outline for it
+				//
+				float[] res = generateOutlinePoly(polys);
+				ctx.drawPoly(null, app.getTheme().getHighlightColour().css(), tmpm, res);
 
-					case OPEN:
-						// 
-						// a line (or lead maybe?)
-						//
-						float[] a = p.getVerts();
-						ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
-						break;
+			} else {
+				for (ComponentPoly p : polys) {
+					switch (p.getType()) {
+						case CLOSED:
+							ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
+							break;
+
+						case OPEN:
+							// 
+							// a line (or lead maybe?)
+							//
+							float[] a = p.getVerts();
+							ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
+							break;
+					}
 				}
 			}
-
 		}
+	}
+
+	private float[] generateOutlinePoly(List<ComponentPoly> polys) {
+		DefaultClipper clip = new DefaultClipper();
+		int n = 0;
+		for (ComponentPoly p : polys) {
+			Path pth = new Path();
+
+			if (p.getType() == ComponentPolyType.OPEN) {
+				//
+				// a lead, so make it an infinitely thin polygon which satisfies clipper
+				//
+				float[] arr = p.getVerts();
+				for (int i = 0; i < arr.length; i += 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
+				for (int i = arr.length - 4; i >= 0; i -= 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000) + 10, (int) (arr[i + 1] * 1000) + 10));
+
+			} else {
+				float[] arr = p.getVerts();
+				for (int i = 0; i < arr.length; i += 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
+			}
+			clip.addPath(pth, n == 0 ? PolyType.SUBJECT : PolyType.CLIP, true);
+			++n;
+		}
+		Paths out = new Paths();
+		clip.execute(ClipType.UNION, out);
+		clip.clear();
+
+		ClipperOffset off = new ClipperOffset();
+		off.addPath(out.get(0), JoinType.ROUND, EndType.CLOSED_POLYGON);
+		Paths out2 = new Paths();
+		off.execute(out2, 500.0f);
+
+		float[] res = new float[out2.get(0).size() * 2];
+		int i = 0;
+		for (LongPoint lp : out2.get(0)) {
+			res[i++] = (float) lp.getX() / 1000.0f;
+			res[i++] = (float) lp.getY() / 1000.0f;
+		}
+		return res;
 	}
 
 	private void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {

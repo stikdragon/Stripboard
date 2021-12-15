@@ -31,7 +31,7 @@ public class ComponentInstance {
 	private int					rotation	= 0;				// 0,1,2,3
 	private Matrix3				tmpM		= new Matrix3();
 	private Board				board;
-	private Poly outlinePoly;
+	private Poly				outlinePoly;
 
 	public ComponentInstance(Board board, Component component) {
 		super();
@@ -39,6 +39,7 @@ public class ComponentInstance {
 		this.component = component;
 		for (Pin p : component.getPins())
 			pins.add(new PinInstance(this, p, component.isStretchy()));
+		modified();
 	}
 
 	public final Component getComponent() {
@@ -51,6 +52,7 @@ public class ComponentInstance {
 
 	public final void setName(String name) {
 		this.name = name;
+		modified();
 	}
 
 	@Override
@@ -68,6 +70,7 @@ public class ComponentInstance {
 
 	public final void setRotation(int rotation) {
 		this.rotation = rotation;
+		modified();
 	}
 
 	/**
@@ -93,13 +96,23 @@ public class ComponentInstance {
 	}
 
 	public void pinChanged(PinInstance pin) {
+		modified();
+	}
+
+	private void modified() {
 		invalidateLayout();
+		getBoard().setModified(true);
 	}
 
 	public void invalidateLayout() {
 		this.outlinePoly = null;
 	}
 
+	/**
+	 * can return <code>null</code> if it doesn't have a poly
+	 * 
+	 * @return
+	 */
 	public Poly getOutlinePoly() {
 		if (outlinePoly == null)
 			generateOutline();
@@ -108,6 +121,8 @@ public class ComponentInstance {
 
 	private void generateOutline() {
 		List<ComponentPoly> polys = getComponent().getPolys(this);
+		if (polys == null || polys.isEmpty())
+			return;
 		DefaultClipper clip = new DefaultClipper();
 		int n = 0;
 		for (ComponentPoly p : polys) {
@@ -148,7 +163,5 @@ public class ComponentInstance {
 		}
 		outlinePoly = new Poly(res);
 	}
-	
-	
 
 }

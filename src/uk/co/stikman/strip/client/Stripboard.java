@@ -67,6 +67,7 @@ public class Stripboard implements EntryPoint {
 	private ToolPanel			toolPanel;
 	private ComponentRenderer	componentRenderer	= new ComponentRenderer(this);
 	private Canvas				boardCanvas;
+	private AppFileSystem fileSystem;
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -97,6 +98,8 @@ public class Stripboard implements EntryPoint {
 		root.setWidgetLeftWidth(toolPanel, 0, Unit.PX, LEFTSIZE, Unit.PX);
 		root.setWidgetTopBottom(toolPanel, TOPSIZE, Unit.PX, 0, Unit.PX);
 
+		fileSystem = new LocalStorageFS();
+		
 		Window.addResizeHandler(this::resize);
 		Scheduler.get().scheduleDeferred(() -> {
 			resize(null);
@@ -104,13 +107,37 @@ public class Stripboard implements EntryPoint {
 		});
 	}
 
+	private void mnuNew() {
+		if (board != null) {
+			if (board.isModified()) {
+				// TODO: show save dialog
+			}
+		}
+		board = new Board(64, 64);
+		drawBoard(board);
+	}
+
+	private void mnuAbout() {
+		AboutDialog dlg = new AboutDialog(this);
+		dlg.show();
+	}
+	private void mnuSave() {
+		if (board.getFilename() != null) {
+			fileSystem.save(board.getFilename(), board.toJSON());
+		} else {
+			//
+			// pick filename
+			//
+			SaveFileDialog dlg  = new SaveFileDialog(this, "Save", null);
+			dlg.show();
+		}
+	}
+
 	private Widget createMenu() {
 
 		MenuBar mnuFile = new MenuBar(true);
-		mnuFile.addItem("New", () -> {
-		});
-		mnuFile.addItem("Save", () -> {
-		});
+		mnuFile.addItem("New", this::mnuNew);
+		mnuFile.addItem("Save", this::mnuSave);
 		mnuFile.addItem("Save As...", () -> {
 		});
 
@@ -125,8 +152,7 @@ public class Stripboard implements EntryPoint {
 		MenuBar mnuHelp = new MenuBar(true);
 		mnuHelp.addItem("Help...", () -> {
 		});
-		mnuHelp.addItem("About...", () -> {
-		});
+		mnuHelp.addItem("About...", this::mnuAbout);
 
 		// Make a new menu bar, adding a few cascading menus to it.
 		MenuBar menu = new MenuBar();
@@ -145,7 +171,7 @@ public class Stripboard implements EntryPoint {
 		view.makeIdentity();
 		view.scale(16.0f);
 		updateView();
-		board = new Board(64, 64);
+		mnuNew();
 		cnv.setFocus(true);
 		drawBoard(board);
 	}
@@ -300,8 +326,8 @@ public class Stripboard implements EntryPoint {
 	}
 
 	/**
-	 * generate a second canvas with the stripboard graphic on, since that's slow to
-	 * render. regenerate on board size change (or zoom?)
+	 * generate a second canvas with the stripboard graphic on, since that's
+	 * slow to render. regenerate on board size change (or zoom?)
 	 * 
 	 * @param brd
 	 * @return

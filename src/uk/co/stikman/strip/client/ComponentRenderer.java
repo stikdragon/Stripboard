@@ -4,13 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.lighti.clipper.Clipper;
-import de.lighti.clipper.Clipper.ClipType;
 import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
-import de.lighti.clipper.Clipper.PolyType;
 import de.lighti.clipper.ClipperOffset;
-import de.lighti.clipper.DefaultClipper;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
 import de.lighti.clipper.Point.LongPoint;
@@ -18,7 +14,6 @@ import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentPoly;
-import uk.co.stikman.strip.client.model.ComponentPolyType;
 import uk.co.stikman.strip.client.model.PinInstance;
 import uk.co.stikman.strip.client.util.Poly;
 
@@ -37,8 +32,8 @@ public class ComponentRenderer {
 	}
 
 	/**
-	 * it's valid to pass x1==x0 and y1==y0, which might mean the component isn't
-	 * rendered at all (eg. it's a resistor that needs dragging first)
+	 * it's valid to pass x1==x0 and y1==y0, which might mean the component
+	 * isn't rendered at all (eg. it's a resistor that needs dragging first)
 	 * 
 	 * @param ctx
 	 * @param view
@@ -66,22 +61,23 @@ public class ComponentRenderer {
 				// generate a union poly, then an outline for it
 				//
 				Poly res = comp.getOutlinePoly();
-				ctx.drawPoly(null, app.getTheme().getHighlightColour().css(), tmpm, res);
+				if (res != null)
+					ctx.drawPoly(null, app.getTheme().getHighlightColour().css(), tmpm, res);
 
 			} else {
 				for (ComponentPoly p : polys) {
 					switch (p.getType()) {
-						case CLOSED:
-							ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p);
-							break;
+					case CLOSED:
+						ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p);
+						break;
 
-						case OPEN:
-							// 
-							// a line (or lead maybe?)
-							//
-							float[] a = p.getVerts();
-							ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
-							break;
+					case OPEN:
+						// 
+						// a line (or lead maybe?)
+						//
+						float[] a = p.getVerts();
+						ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
+						break;
 					}
 				}
 			}

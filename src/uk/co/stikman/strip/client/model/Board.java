@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.lighti.clipper.Path;
+import uk.co.stikman.strip.client.json.JSONObject;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
@@ -16,6 +17,8 @@ public class Board {
 	private Hole[]					holes;
 	private List<ComponentInstance>	components	= new ArrayList<>();
 	private PolyCache				polyCache	= new PolyCache();
+	private boolean					modified;
+	private String					filename;
 
 	public Board(int width, int height) {
 		this.width = width;
@@ -59,11 +62,12 @@ public class Board {
 		components.add(inst);
 		for (PinInstance p : inst.getPins())
 			getHole(p.getPosition().x, p.getPosition().y).addPin(p);
+		modified = true;
 	}
 
 	/**
-	 * fill the provided list with {@link HitResult} instances, indicating what's
-	 * under the cursor.
+	 * fill the provided list with {@link HitResult} instances, indicating
+	 * what's under the cursor.
 	 * 
 	 * @param pos
 	 * @param results
@@ -84,15 +88,38 @@ public class Board {
 		Vector2 p = new Vector2();
 		for (ComponentInstance ci : components) {
 			Poly poly = ci.getOutlinePoly();
-			p.set(pos.x, pos.y).sub(ci.getPin(0).getPosition());
-			if (poly.contains(p))
-				results.add(new HitResult(HitResultType.COMPONENT_INSTANCE, ci));
+			if (poly != null) {
+				p.set(pos.x, pos.y).sub(ci.getPin(0).getPosition());
+				if (poly.contains(p))
+					results.add(new HitResult(HitResultType.COMPONENT_INSTANCE, ci));
+			}
 		}
 
 	}
 
 	public PolyCache getPolyCache() {
 		return polyCache;
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public final void setModified(boolean modified) {
+		this.modified = modified;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public final void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public JSONObject toJSON() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

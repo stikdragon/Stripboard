@@ -264,7 +264,7 @@ public class Vector2 {
 	 * @param v
 	 * @return
 	 */
-	public Vector2 multiplyLocal(Vector2 v) {
+	public Vector2 multiply(Vector2 v) {
 		x *= v.x;
 		y *= v.y;
 		return this;
@@ -285,6 +285,12 @@ public class Vector2 {
 	public Vector2 set(Vector2i vi) {
 		x = vi.x;
 		y = vi.y;
+		return this;
+	}
+
+	public Vector2 sub(Vector2i v) {
+		x -= v.x;
+		y -= v.y;
 		return this;
 	}
 

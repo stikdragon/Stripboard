@@ -18,4 +18,9 @@ public class HitResult {
 	public final Object getObject() {
 		return object;
 	}
+
+	@Override
+	public String toString() {
+		return object.getClass().getSimpleName();
+	}
 }

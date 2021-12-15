@@ -20,6 +20,7 @@ import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentPoly;
 import uk.co.stikman.strip.client.model.ComponentPolyType;
 import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Poly;
 
 public class ComponentRenderer {
 
@@ -64,14 +65,14 @@ public class ComponentRenderer {
 				//
 				// generate a union poly, then an outline for it
 				//
-				float[] res = generateOutlinePoly(polys);
+				Poly res = comp.getOutlinePoly();
 				ctx.drawPoly(null, app.getTheme().getHighlightColour().css(), tmpm, res);
 
 			} else {
 				for (ComponentPoly p : polys) {
 					switch (p.getType()) {
 						case CLOSED:
-							ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p.getVerts());
+							ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p);
 							break;
 
 						case OPEN:
@@ -85,48 +86,6 @@ public class ComponentRenderer {
 				}
 			}
 		}
-	}
-
-	private float[] generateOutlinePoly(List<ComponentPoly> polys) {
-		DefaultClipper clip = new DefaultClipper();
-		int n = 0;
-		for (ComponentPoly p : polys) {
-			Path pth = new Path();
-
-			if (p.getType() == ComponentPolyType.OPEN) {
-				//
-				// a lead, so make it an infinitely thin polygon which satisfies clipper
-				//
-				float[] arr = p.getVerts();
-				for (int i = 0; i < arr.length; i += 2)
-					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
-				for (int i = arr.length - 4; i >= 0; i -= 2)
-					pth.add(new LongPoint((int) (arr[i] * 1000) + 10, (int) (arr[i + 1] * 1000) + 10));
-
-			} else {
-				float[] arr = p.getVerts();
-				for (int i = 0; i < arr.length; i += 2)
-					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
-			}
-			clip.addPath(pth, n == 0 ? PolyType.SUBJECT : PolyType.CLIP, true);
-			++n;
-		}
-		Paths out = new Paths();
-		clip.execute(ClipType.UNION, out);
-		clip.clear();
-
-		ClipperOffset off = new ClipperOffset();
-		off.addPath(out.get(0), JoinType.ROUND, EndType.CLOSED_POLYGON);
-		Paths out2 = new Paths();
-		off.execute(out2, 500.0f);
-
-		float[] res = new float[out2.get(0).size() * 2];
-		int i = 0;
-		for (LongPoint lp : out2.get(0)) {
-			res[i++] = (float) lp.getX() / 1000.0f;
-			res[i++] = (float) lp.getY() / 1000.0f;
-		}
-		return res;
 	}
 
 	private void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {

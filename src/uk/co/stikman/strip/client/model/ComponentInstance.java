@@ -3,8 +3,18 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.lighti.clipper.ClipperOffset;
+import de.lighti.clipper.DefaultClipper;
+import de.lighti.clipper.Path;
+import de.lighti.clipper.Paths;
+import de.lighti.clipper.Clipper.ClipType;
+import de.lighti.clipper.Clipper.EndType;
+import de.lighti.clipper.Clipper.JoinType;
+import de.lighti.clipper.Clipper.PolyType;
+import de.lighti.clipper.Point.LongPoint;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2i;
+import uk.co.stikman.strip.client.util.Poly;
 
 /**
  * pin 0 sets the position of the component, the other pins can either be
@@ -21,6 +31,7 @@ public class ComponentInstance {
 	private int					rotation	= 0;				// 0,1,2,3
 	private Matrix3				tmpM		= new Matrix3();
 	private Board				board;
+	private Poly outlinePoly;
 
 	public ComponentInstance(Board board, Component component) {
 		super();
@@ -80,5 +91,64 @@ public class ComponentInstance {
 	public final Board getBoard() {
 		return board;
 	}
+
+	public void pinChanged(PinInstance pin) {
+		invalidateLayout();
+	}
+
+	public void invalidateLayout() {
+		this.outlinePoly = null;
+	}
+
+	public Poly getOutlinePoly() {
+		if (outlinePoly == null)
+			generateOutline();
+		return outlinePoly;
+	}
+
+	private void generateOutline() {
+		List<ComponentPoly> polys = getComponent().getPolys(this);
+		DefaultClipper clip = new DefaultClipper();
+		int n = 0;
+		for (ComponentPoly p : polys) {
+			Path pth = new Path();
+
+			if (p.getType() == ComponentPolyType.OPEN) {
+				//
+				// a lead, so make it an infinitely thin polygon which satisfies clipper
+				//
+				float[] arr = p.getVerts();
+				for (int i = 0; i < arr.length; i += 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
+				for (int i = arr.length - 4; i >= 0; i -= 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000) + 10, (int) (arr[i + 1] * 1000) + 10));
+
+			} else {
+				float[] arr = p.getVerts();
+				for (int i = 0; i < arr.length; i += 2)
+					pth.add(new LongPoint((int) (arr[i] * 1000), (int) (arr[i + 1] * 1000)));
+			}
+			clip.addPath(pth, n == 0 ? PolyType.SUBJECT : PolyType.CLIP, true);
+			++n;
+		}
+		Paths out = new Paths();
+		clip.execute(ClipType.UNION, out);
+		clip.clear();
+
+		ClipperOffset off = new ClipperOffset();
+		off.addPath(out.get(0), JoinType.ROUND, EndType.CLOSED_POLYGON);
+		Paths out2 = new Paths();
+		off.execute(out2, 500.0f);
+
+		float[] res = new float[out2.get(0).size() * 2];
+		int i = 0;
+		for (LongPoint lp : out2.get(0)) {
+			res[i++] = (float) lp.getX() / 1000.0f;
+			res[i++] = (float) lp.getY() / 1000.0f;
+		}
+		outlinePoly = new Poly(res);
+	}
+	
+	
 
 }

@@ -20,7 +20,7 @@ public class PlaceComponentTool extends AbstractTool {
 	private ComponentInstance	inst;
 	private int					currentHoleX;
 	private int					currentHoleY;
-	private Vector3				downAt;
+	private Vector2				downAt;
 	private String				hilightColour;
 	private boolean				placed	= false;
 	private boolean				invalid	= false;
@@ -39,11 +39,11 @@ public class PlaceComponentTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseDown(Vector3 pos, int button) {
+	public void mouseDown(Vector2 pos, int button) {
 		if (invalid)
 			return;
-		downAt = new Vector3(pos);
-		inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
+		downAt = new Vector2(pos);
+		inst.getPin(0).setPosition(new Vector2i(pos));
 		placed = true;
 
 		//
@@ -53,40 +53,20 @@ public class PlaceComponentTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseMove(Vector3 pos) {
+	public void mouseMove(Vector2 pos) {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
 		if (inst.getComponent().isStretchy()) {
 			inst.getPin(1).getPosition().set(currentHoleX, currentHoleY);
 		} else {
-			inst.getPin(0).setPosition(new Vector2i((int) pos.x, (int) pos.y));
+			inst.getPin(0).setPosition(new Vector2i(pos));
 			inst.updatePinPositions();
 		}
-
-		invalid = !checkPinPositions();
 	}
 
-	/**
-	 * check current pin locations against the board, update the error highlights.
-	 * return <code>true</code> if they're all free, <code>false</code> otherwise
-	 */
-	private boolean checkPinPositions() {
-		List<ErrorMarker> errors = new ArrayList<>();
-		for (PinInstance p : inst.getPins()) {
-			Hole h = getApp().getBoard().getHole(p.getPosition());
-			if (h.getPin() != null) {
-				ErrorMarker em = new ErrorMarker();
-				em.setPosition(p.getPosition());
-				errors.add(em);
-			}
-		}
-
-		getApp().setErrorMarkers(errors);
-		return errors.isEmpty();
-	}
 
 	@Override
-	public void mouseUp(Vector3 pos, int button) {
+	public void mouseUp(Vector2 pos, int button) {
 		if (downAt == null)
 			return;
 		int x0 = (int) downAt.x;

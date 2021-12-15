@@ -9,6 +9,7 @@ import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.util.Colour;
+import uk.co.stikman.strip.client.util.Poly;
 
 public class RenderIntf {
 	private static final float	PI2		= 2.0f * 3.14159f;
@@ -102,9 +103,10 @@ public class RenderIntf {
 		context.stroke();
 	}
 
-	public void drawPoly(String fill, String stroke, Matrix3 xfm, float[] verts) {
+	public void drawPoly(String fill, String stroke, Matrix3 xfm, Poly poly) {
 		Matrix3 m = getTransformView(xfm);
-		int n = verts.length / 2;
+		int n = poly.size();
+		float[] verts = poly.getVerts();
 		context.beginPath();
 		for (int i = 0; i < n; ++i) {
 			tmpv.set(verts[i * 2], verts[i * 2 + 1], 1.0f);

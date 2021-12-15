@@ -3,6 +3,7 @@ package uk.co.stikman.strip.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector3;
 
 public abstract class AbstractTool {
@@ -13,15 +14,15 @@ public abstract class AbstractTool {
 		this.app = app;
 	}
 
-	public void mouseDown(Vector3 pos, int button) {
+	public void mouseDown(Vector2 pos, int button) {
 
 	}
 
-	public void mouseMove(Vector3 pos) {
+	public void mouseMove(Vector2 pos) {
 
 	}
 
-	public void mouseUp(Vector3 pos, int button) {
+	public void mouseUp(Vector2 pos, int button) {
 
 	}
 

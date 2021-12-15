@@ -35,3 +35,8 @@ canvas {
 	background: #e2e2e2;
 	margin: 3px;
 }
+
+
+.gwt-MenuItem {
+	color: #000;
+}

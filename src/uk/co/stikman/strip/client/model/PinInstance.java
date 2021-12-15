@@ -34,6 +34,8 @@ public class PinInstance {
 
 	public final void setPosition(Vector2i position) {
 		this.position.set(position);
+		if (owner!=null)
+			owner.pinChanged(this);
 	}
 
 	public final ComponentInstance getComponentInstance() {

@@ -1,33 +1,26 @@
 package uk.co.stikman.strip.client.model;
 
-public class ComponentPoly {
-	private ComponentPolyType	type;
-	private float[]				verts;
+import uk.co.stikman.strip.client.util.Poly;
+
+public class ComponentPoly extends Poly {
+	private ComponentPolyType type;
 
 	public ComponentPoly(ComponentPolyType type) {
-		super();
+		super(null);
 		this.type = type;
 	}
 
 	public ComponentPoly(ComponentPolyType type, float[] verts) {
-		super();
+		super(verts);
 		this.type = type;
-		this.verts = verts;
 	}
 
 	public final ComponentPolyType getType() {
 		return type;
 	}
 
-	public final float[] getVerts() {
-		return verts;
-	}
-
 	public final void setType(ComponentPolyType type) {
 		this.type = type;
 	}
 
-	public final void setVerts(float[] verts) {
-		this.verts = verts;
-	}
 }

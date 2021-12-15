@@ -3,6 +3,7 @@ package uk.co.stikman.strip.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
@@ -25,12 +26,12 @@ public class PointerTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseDown(Vector3 pos, int button) {
+	public void mouseDown(Vector2 pos, int button) {
 
 	}
 
 	@Override
-	public void mouseMove(Vector3 pos) {
+	public void mouseMove(Vector2 pos) {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
 
@@ -39,14 +40,15 @@ public class PointerTool extends AbstractTool {
 		//
 		List<HitResult> lst = new ArrayList<>();
 		getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
-		if (!lst.isEmpty())
+		if (!lst.isEmpty()) {
 			selected = lst.get(0).getObject();
-		else
+		} else {
 			selected = null;
+		}
 	}
 
 	@Override
-	public void mouseUp(Vector3 pos, int button) {
+	public void mouseUp(Vector2 pos, int button) {
 	}
 
 	@Override
@@ -76,23 +78,7 @@ public class PointerTool extends AbstractTool {
 				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE);
 			}
 		}
-
-		//		Clipper clipper = new DefaultClipper();
-		//		if (selected != null) {
-		//			Path p = new Path();
-		//			p.add(new LongPoint(0, 0));
-		//			p.add(new LongPoint(0, 0));
-		//			p.add(new LongPoint(0, 0));
-		//			p.add(new LongPoint(0, 0));
-		//			
-		//			clipper.addPath(p, PolyType.SUBJECT, true);
-		//			Paths solution = new Paths();
-		//			clipper.execute(ClipType.UNION, solution);
-		//			
-		//			
-		//		}
 	}
-
 
 	@Override
 	public void keyPress(char ch) {

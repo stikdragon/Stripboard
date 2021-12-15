@@ -36,6 +36,16 @@ public class Vector2i {
 		super();
 	}
 
+	/**
+	 * casts to int
+	 * 
+	 * @param copy
+	 */
+	public Vector2i(Vector2 copy) {
+		this.x = (int) copy.x;
+		this.y = (int) copy.y;
+	}
+
 	public Vector2i add(Vector2i v) {
 		this.x += v.x;
 		this.y += v.y;

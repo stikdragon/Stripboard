@@ -3,8 +3,12 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.lighti.clipper.Path;
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.math.Vector3;
+import uk.co.stikman.strip.client.util.Poly;
+import uk.co.stikman.strip.client.util.Util;
 
 public class Board {
 	private int						width;
@@ -54,31 +58,35 @@ public class Board {
 	public void placeComponent(ComponentInstance inst) {
 		components.add(inst);
 		for (PinInstance p : inst.getPins())
-			getHole(p.getPosition().x, p.getPosition().y).setPin(p);
+			getHole(p.getPosition().x, p.getPosition().y).addPin(p);
 	}
 
 	/**
-	 * fill the provided list with {@link HitResult} instances, indicating
-	 * what's under the cursor.
+	 * fill the provided list with {@link HitResult} instances, indicating what's
+	 * under the cursor.
 	 * 
 	 * @param pos
 	 * @param results
 	 */
-	public void findThingsUnder(Vector3 pos, List<HitResult> results, float distance) {
-		Vector2i v = new Vector2i((int) pos.x, (int) pos.y);
+	public void findThingsUnder(Vector2 pos, List<HitResult> results, float distance) {
+		Vector2i v = new Vector2i(pos);
 		if (!isValidCoord(v))
 			return;
 		Hole h = getHole(v);
-		if (h.getPin() != null) {
-			HitResult hr = new HitResult(HitResultType.PIN_INSTANCE, h.getPin());
+		for (PinInstance p : h.getPins()) {
+			HitResult hr = new HitResult(HitResultType.PIN_INSTANCE, p);
 			results.add(hr);
 		}
 
 		//
 		// look for components too
 		//
+		Vector2 p = new Vector2();
 		for (ComponentInstance ci : components) {
-
+			Poly poly = ci.getOutlinePoly();
+			p.set(pos.x, pos.y).sub(ci.getPin(0).getPosition());
+			if (poly.contains(p))
+				results.add(new HitResult(HitResultType.COMPONENT_INSTANCE, ci));
 		}
 
 	}

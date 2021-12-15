@@ -1,5 +1,6 @@
 package uk.co.stikman.strip.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.canvas.client.Canvas;
@@ -20,11 +21,16 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
@@ -54,12 +60,11 @@ public class Stripboard implements EntryPoint {
 	private Matrix3				view				= new Matrix3();
 	private ComponentLibrary	library;
 	private AbstractTool		currentTool;
-	private Vector3				tmpv				= new Vector3();
+	private Vector2				tmpv				= new Vector2();
 	private Matrix3				inverseView;
 	private RenderIntf			renderer;
 	private boolean				invalid;
 	private ToolPanel			toolPanel;
-	private List<ErrorMarker>	errors;
 	private ComponentRenderer	componentRenderer	= new ComponentRenderer(this);
 	private Canvas				boardCanvas;
 
@@ -76,13 +81,16 @@ public class Stripboard implements EntryPoint {
 		cnv.addMouseMoveHandler(this::mouseMove);
 		cnv.addMouseUpHandler(this::mouseUp);
 
-		HTML html = new HTML();
-		String s = Document.get().getElementById("instructions").getInnerHTML();
-		html.setHTML(s);
-		html.setStyleName("instructions");
-		root.add(html);
-		root.setWidgetLeftRight(html, 0, Unit.PX, 0, Unit.PX);
-		root.setWidgetTopHeight(html, 0, Unit.PX, TOPSIZE, Unit.PX);
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.setCellVerticalAlignment(hp, HasVerticalAlignment.ALIGN_MIDDLE);
+		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		root.add(hp);
+		HTML title = new HTML("<h2>Stripboard Editor</h2>");
+		title.setStyleName("instructions");
+		hp.add(title);
+		hp.add(createMenu());
+		root.setWidgetLeftRight(hp, 0, Unit.PX, 0, Unit.PX);
+		root.setWidgetTopHeight(hp, 0, Unit.PX, TOPSIZE, Unit.PX);
 
 		toolPanel = new ToolPanel();
 		root.add(toolPanel);
@@ -94,6 +102,39 @@ public class Stripboard implements EntryPoint {
 			resize(null);
 			run(null);
 		});
+	}
+
+	private Widget createMenu() {
+
+		MenuBar mnuFile = new MenuBar(true);
+		mnuFile.addItem("New", () -> {
+		});
+		mnuFile.addItem("Save", () -> {
+		});
+		mnuFile.addItem("Save As...", () -> {
+		});
+
+		MenuBar mnuEdit = new MenuBar(true);
+		mnuEdit.addItem("Undo", () -> {
+		});
+		mnuEdit.addItem("Redo", () -> {
+		});
+		mnuEdit.addItem("Select All", () -> {
+		});
+
+		MenuBar mnuHelp = new MenuBar(true);
+		mnuHelp.addItem("Help...", () -> {
+		});
+		mnuHelp.addItem("About...", () -> {
+		});
+
+		// Make a new menu bar, adding a few cascading menus to it.
+		MenuBar menu = new MenuBar();
+		menu.addItem("File", mnuFile);
+		menu.addItem("Edit", mnuEdit);
+		menu.addItem("Help", mnuHelp);
+
+		return menu;
 	}
 
 	private void run(ClickEvent ev) {
@@ -147,9 +188,9 @@ public class Stripboard implements EntryPoint {
 		render();
 	}
 
-	private Vector3 transformMouse(MouseEvent<?> ev) {
-		Vector3 v = new Vector3(ev.getX(), ev.getY(), 1);
-		Vector3 u = inverseView.multiply(v, tmpv);
+	private Vector2 transformMouse(MouseEvent<?> ev) {
+		Vector2 v = new Vector2(ev.getX(), ev.getY());
+		Vector2 u = inverseView.multiply(v, tmpv);
 		return u;
 	}
 
@@ -234,12 +275,14 @@ public class Stripboard implements EntryPoint {
 		Canvas cbrd = getBoardCanvas(brd);
 
 		cnv.getContext2d().drawImage(cbrd.getCanvasElement(), 0, 0);
-
+		List<Hole> errorholes = new ArrayList<>();
 		for (int y = 0; y < brd.getHeight(); ++y) {
 			for (int x = 0; x < brd.getWidth(); ++x) {
 				Hole hole = brd.getHole(x, y);
 				if (hole.isBroken())
 					renderer.drawBreak(x, y);
+				if (hole.getPins().size() > 1)
+					errorholes.add(hole);
 			}
 		}
 
@@ -248,21 +291,17 @@ public class Stripboard implements EntryPoint {
 			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
 		}
 
-		if (errors != null) {
-			for (ErrorMarker em : errors) {
-				Vector2i v = em.getPosition();
-				renderer.drawCircle(v.x + 0.5f, v.y + 0.5f, 0.6f, null, theme.getErrorColour().css());
-			}
-		}
-		
+		for (Hole h : errorholes)
+			renderer.drawCircle(h.getX() + 0.5f, h.getY() + 0.5f, 0.6f, null, theme.getErrorColour().css());
+
 		//
 		// render selected items
 		//
 	}
 
 	/**
-	 * generate a second canvas with the stripboard graphic on, since that's
-	 * slow to render. regenerate on board size change (or zoom?)
+	 * generate a second canvas with the stripboard graphic on, since that's slow to
+	 * render. regenerate on board size change (or zoom?)
 	 * 
 	 * @param brd
 	 * @return
@@ -325,11 +364,6 @@ public class Stripboard implements EntryPoint {
 
 	public void invalidate() {
 		this.invalid = true;
-	}
-
-	public void setErrorMarkers(List<ErrorMarker> errors) {
-		this.errors = errors;
-		invalidate();
 	}
 
 	public final ComponentRenderer getComponentRenderer() {

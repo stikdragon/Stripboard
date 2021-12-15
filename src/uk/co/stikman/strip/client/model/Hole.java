@@ -1,10 +1,14 @@
 package uk.co.stikman.strip.client.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Hole {
-	private boolean		broken	= false;
-	private PinInstance	pin		= null;
-	private int			x;
-	private int			y;
+	private boolean				broken	= false;
+	private List<PinInstance>	pins	= null;
+	private int					x;
+	private int					y;
 
 	public boolean isBroken() {
 		return broken;
@@ -14,12 +18,16 @@ public class Hole {
 		this.broken = broken;
 	}
 
-	public PinInstance getPin() {
-		return pin;
+	public List<PinInstance> getPins() {
+		if (pins == null)
+			return Collections.emptyList();
+		return pins;
 	}
 
-	public void setPin(PinInstance pin) {
-		this.pin = pin;
+	public void addPin(PinInstance pin) {
+		if (pins == null)
+			pins = new ArrayList<>();
+		pins.add(pin);
 	}
 
 	public final int getY() {

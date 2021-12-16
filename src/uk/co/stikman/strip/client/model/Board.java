@@ -3,13 +3,10 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.lighti.clipper.Path;
 import uk.co.stikman.strip.client.json.JSONObject;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
-import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.util.Poly;
-import uk.co.stikman.strip.client.util.Util;
 
 public class Board {
 	private int						width;
@@ -120,6 +117,17 @@ public class Board {
 	public JSONObject toJSON() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * make sure all holes have the correct things in
+	 */
+	public void updatePinPositions() {
+		for (Hole h : holes)
+			h.clearPins();
+		for (ComponentInstance ci : components)
+			for (PinInstance pi : ci.getPins())
+				getHole(pi.getPosition()).addPin(pi);
 	}
 
 }

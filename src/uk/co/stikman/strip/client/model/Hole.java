@@ -50,4 +50,9 @@ public class Hole {
 			pins.remove(pin);
 	}
 
+	public void clearPins() {
+		if (pins != null)
+			pins.clear();
+	}
+
 }

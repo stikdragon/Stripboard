@@ -1,6 +1,5 @@
 package uk.co.stikman.strip.client.model.components;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.stikman.strip.client.model.Component;

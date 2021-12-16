@@ -1,13 +1,21 @@
 package uk.co.stikman.strip.client;
 
+import java.util.List;
+
+import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
+import uk.co.stikman.strip.client.model.ComponentInstance;
+import uk.co.stikman.strip.client.model.ComponentPoly;
 
 public class DragGhost {
-	private Object		object;
-	private GhostType	type;
-	private Vector2		downAt;
-	private Vector2		offset	= new Vector2();
-	private Vector2		current	= new Vector2();
+	private Object				object;
+	private GhostType			type;
+	private Vector2				downAt;
+	private Vector2				offset	= new Vector2();
+	private Vector2				current	= new Vector2();
+	private Vector2				tv		= new Vector2();
+	private Matrix3				tm		= new Matrix3();
+	private List<ComponentPoly>	polys;
 
 	public DragGhost(Object object, GhostType type, Vector2 downAt, Vector2 offset) {
 		super();
@@ -15,6 +23,11 @@ public class DragGhost {
 		this.type = type;
 		this.downAt = downAt;
 		this.offset = offset;
+
+		if (type == GhostType.COMPONENT) {
+			ComponentInstance ci = (ComponentInstance) object;
+			polys = ci.getComponent().getPolys(ci);
+		}
 	}
 
 	public Object getObject() {
@@ -58,7 +71,15 @@ public class DragGhost {
 	}
 
 	public void render(RenderIntf ctx) {
-		ctx.drawCircle(current.x + offset.x, current.y + offset.y, 1.0f, "red", "green");
+		tv.set(current).add(offset);
+		tv.round();
+		if (type == GhostType.PIN) {
+			ctx.drawCircle(tv.x + 0.5f, tv.y + 0.5f, 0.5f, "red", "green");
+		} else if (type == GhostType.COMPONENT) {
+			tm.makeTranslation(tv);
+			for (ComponentPoly p : polys)
+				ctx.drawPoly("red", "green", tm, p);
+		}
 	}
 
 }

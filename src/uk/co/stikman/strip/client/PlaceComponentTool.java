@@ -1,19 +1,13 @@
 package uk.co.stikman.strip.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.dom.client.Style.Cursor;
 
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
-import uk.co.stikman.strip.client.math.Vector3;
-import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
-import uk.co.stikman.strip.client.model.Hole;
-import uk.co.stikman.strip.client.model.PinInstance;
-import uk.co.stikman.strip.client.util.Util;
 
 public class PlaceComponentTool extends AbstractTool {
 	private final Component		comp;

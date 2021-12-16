@@ -288,4 +288,9 @@ public class Vector2 {
 		return this;
 	}
 
+	public void round() {
+		x = (int)x;
+		y = (int)y;
+	}
+
 }

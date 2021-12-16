@@ -7,7 +7,6 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,19 +29,15 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
 
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
-import uk.co.stikman.strip.client.math.Vector2i;
-import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentLibrary;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
-import uk.co.stikman.strip.client.util.Util;
 
 public class Stripboard implements EntryPoint {
 	public static final float	PI					= 3.14159f;

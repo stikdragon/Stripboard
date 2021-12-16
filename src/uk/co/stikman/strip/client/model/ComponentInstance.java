@@ -3,14 +3,14 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.lighti.clipper.ClipperOffset;
-import de.lighti.clipper.DefaultClipper;
-import de.lighti.clipper.Path;
-import de.lighti.clipper.Paths;
 import de.lighti.clipper.Clipper.ClipType;
 import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
 import de.lighti.clipper.Clipper.PolyType;
+import de.lighti.clipper.ClipperOffset;
+import de.lighti.clipper.DefaultClipper;
+import de.lighti.clipper.Path;
+import de.lighti.clipper.Paths;
 import de.lighti.clipper.Point.LongPoint;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2i;

@@ -3,10 +3,8 @@ package uk.co.stikman.strip.client.model.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.stikman.strip.client.AppTheme;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
-import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;

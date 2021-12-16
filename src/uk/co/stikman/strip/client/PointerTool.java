@@ -5,14 +5,12 @@ import java.util.List;
 
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
-import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.HitResult;
 import uk.co.stikman.strip.client.model.HitResultType;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
-import uk.co.stikman.strip.client.util.Util;
 
 public class PointerTool extends AbstractTool {
 
@@ -34,6 +32,7 @@ public class PointerTool extends AbstractTool {
 	@Override
 	public void mouseDown(Vector2 pos, int button) {
 
+		ghost = null;
 		List<HitResult> lst = new ArrayList<>();
 		getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
 		Object o = null;
@@ -75,9 +74,8 @@ public class PointerTool extends AbstractTool {
 
 			if (o instanceof PinInstance) {
 				ghost = new DragGhost(o, GhostType.PIN, pos, Vector2.ZERO);
-
 				mouseDownObjectPosition.set(((PinInstance) o).getPosition());
-			} else if (hover instanceof ComponentInstance) {
+			} else if (o instanceof ComponentInstance) {
 				Vector2 dv = new Vector2(((ComponentInstance) o).getPin(0).getPosition()).sub(pos);
 				ghost = new DragGhost(o, GhostType.COMPONENT, pos, dv);
 				mouseDownObjectPosition.set(((ComponentInstance) o).getPin(0).getPosition());
@@ -117,20 +115,34 @@ public class PointerTool extends AbstractTool {
 		if (ghost != null) {
 			Vector2i finalpos = new Vector2i(ghost.getCurrentPosition().add(ghost.getOffset(), new Vector2()));
 			switch (ghost.getType()) {
-				case COMPONENT:
-					ComponentInstance ci = (ComponentInstance) ghost.getObject();
+			case COMPONENT:
+				ComponentInstance ci = (ComponentInstance) ghost.getObject();
+				if (ci.getComponent().isStretchy()) {
+					//
+					// need to move all pins 
+					//
+					Vector2i delta = new Vector2i(finalpos).sub(ci.getPin(0).getPosition());
+					for (PinInstance p : ci.getPins()) {
+						p.setPosition(p.getPosition().add(delta));
+					}
+					
+				} else {
+					//
+					// just update the anchor pin
+					//
 					ci.getPin(0).setPosition(finalpos);
 					ci.updatePinPositions();
-					break;
-				case PIN:
-					//
-					// must be in a stretchy mode
-					//
-					PinInstance pi = (PinInstance) ghost.getObject();
-					pi.setPosition(finalpos);
-					break;
+				}
+				break;
+			case PIN:
+				//
+				// must be in a stretchy mode
+				//
+				PinInstance pi = (PinInstance) ghost.getObject();
+				pi.setPosition(finalpos);
+				break;
 			}
-
+			getApp().getBoard().updatePinPositions();
 			getApp().invalidate();
 		}
 		mouseDownItem = null;

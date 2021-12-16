@@ -5,7 +5,6 @@ import uk.co.stikman.strip.client.RenderIntf;
 import uk.co.stikman.strip.client.RenderState;
 import uk.co.stikman.strip.client.math.GeoUtil;
 import uk.co.stikman.strip.client.math.Vector2;
-import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.PinInstance;
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.stikman.strip.client.math.Vector2;
-import uk.co.stikman.strip.client.math.Vector3;
 
 public abstract class AbstractTool {
 

@@ -59,7 +59,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-Button {
-	margin: 0;
+	margin: 4px;
 	padding: 3px 5px;
 	text-decoration: none;
 	font-size: small;
@@ -287,6 +287,12 @@ a, a:visited, a:hover {
 	vertical-align: bottom;
 	color: #666666;
 	font-weight: bold;
+}
+
+.gwt-MenuItem span, .gwt-MenuItem img {
+	vertical-align: middle;
+	padding-left: 4px;
+	padding-right: 4px;
 }
 
 .gwt-MenuBar-horizontal .gwt-MenuItemSeparator {

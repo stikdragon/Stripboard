@@ -73,11 +73,11 @@ public class PointerTool extends AbstractTool {
 			mouseDownCursorPosition.set(pos);
 
 			if (o instanceof PinInstance) {
-				ghost = new DragGhost(o, GhostType.PIN, pos, Vector2.ZERO);
+				ghost = new DragGhost(this, o, GhostType.PIN, pos, Vector2.ZERO);
 				mouseDownObjectPosition.set(((PinInstance) o).getPosition());
 			} else if (o instanceof ComponentInstance) {
 				Vector2 dv = new Vector2(((ComponentInstance) o).getPin(0).getPosition()).sub(pos);
-				ghost = new DragGhost(o, GhostType.COMPONENT, pos, dv);
+				ghost = new DragGhost(this, o, GhostType.COMPONENT, pos, dv);
 				mouseDownObjectPosition.set(((ComponentInstance) o).getPin(0).getPosition());
 			}
 		}

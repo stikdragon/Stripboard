@@ -99,11 +99,9 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratorPanel .topCenter, .gwt-DecoratorPanel .bottomCenter {
-	background: url(images/hborder.png) repeat-x;
 }
 
 .gwt-DecoratorPanel .middleLeft, .gwt-DecoratorPanel .middleRight {
-	background: url(images/vborder.png) repeat-y;
 }
 
 .gwt-DecoratorPanel .topLeftInner, .gwt-DecoratorPanel .topRightInner, .gwt-DecoratorPanel .bottomLeftInner, .gwt-DecoratorPanel .bottomRightInner {
@@ -113,23 +111,19 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratorPanel .topLeft {
-	background: url(images/corner.png) no-repeat 0px 0px;
 }
 
 .gwt-DecoratorPanel .topRight {
-	background: url(images/corner.png) no-repeat -5px 0px;
 }
 
 .gwt-DecoratorPanel .bottomLeft {
-	background: url(images/corner.png) no-repeat 0px -5px;
 }
 
 .gwt-DecoratorPanel .bottomRight {
-	background: url(images/corner.png) no-repeat -5px -5px;
 }
 
 .gwt-DialogBox .Caption {
-	background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
+	background: #e3e8f3;
 	padding: 4px 4px 4px 8px;
 	cursor: default;
 	border-bottom: 1px solid #bbbbbb;
@@ -146,15 +140,12 @@ a, a:visited, a:hover {
 }
 
 .gwt-DialogBox .dialogBottomCenter {
-	background: url(images/hborder.png) repeat-x 0px -4px;
 }
 
 .gwt-DialogBox .dialogMiddleLeft {
-	background: url(images/vborder.png) repeat-y;
 }
 
 .gwt-DialogBox .dialogMiddleRight {
-	background: url(images/vborder.png) repeat-y -4px 0px;
 }
 
 .gwt-DialogBox .dialogTopLeftInner {
@@ -180,19 +171,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-DialogBox .dialogTopLeft {
-	background: url(images/corner.png) no-repeat -13px 0px;
 }
 
 .gwt-DialogBox .dialogTopRight {
-	background: url(images/corner.png) no-repeat -18px 0px;
 }
 
 .gwt-DialogBox .dialogBottomLeft {
-	background: url(images/corner.png) no-repeat 0px -15px;
 }
 
 .gwt-DialogBox .dialogBottomRight {
-	background: url(images/corner.png) no-repeat -5px -15px;
 }
 
 .gwt-DisclosurePanel {
@@ -238,7 +225,7 @@ a, a:visited, a:hover {
 .gwt-HorizontalSplitPanel .hsplitter {
 	cursor: move;
 	border: 0px;
-	background: #91c0ef url(images/vborder.png) repeat-y;
+	background: #91c0ef;
 	line-height: 0px;
 }
 
@@ -249,7 +236,7 @@ a, a:visited, a:hover {
 .gwt-VerticalSplitPanel .vsplitter {
 	cursor: move;
 	border: 0px;
-	background: #91c0ef url(images/hborder.png) repeat-x;
+	background: #91c0ef;
 	line-height: 0px;
 }
 
@@ -291,7 +278,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-MenuBar-horizontal {
-	background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
+	background: #e3e8f3;'
 	border: 1px solid #BBBBBB;
 }
 
@@ -353,19 +340,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-MenuBarPopup .menuPopupTopCenter {
-	background: url(images/hborder.png) 0px -12px repeat-x;
 }
 
 .gwt-MenuBarPopup .menuPopupBottomCenter {
-	background: url(images/hborder.png) 0px -13px repeat-x;
 }
 
 .gwt-MenuBarPopup .menuPopupMiddleLeft {
-	background: url(images/vborder.png) -12px 0px repeat-y;
 }
 
 .gwt-MenuBarPopup .menuPopupMiddleRight {
-	background: url(images/vborder.png) -13px 0px repeat-y;
 }
 
 .gwt-MenuBarPopup .menuPopupTopLeftInner {
@@ -393,19 +376,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-MenuBarPopup .menuPopupTopLeft {
-	background: url(images/corner.png) no-repeat 0px -36px;
 }
 
 .gwt-MenuBarPopup .menuPopupTopRight {
-	background: url(images/corner.png) no-repeat -5px -36px;
 }
 
 .gwt-MenuBarPopup .menuPopupBottomLeft {
-	background: url(images/corner.png) no-repeat 0px -41px;
 }
 
 .gwt-MenuBarPopup .menuPopupBottomRight {
-	background: url(images/corner.png) no-repeat -5px -41px;
 }
 
 .gwt-PasswordTextBox {
@@ -432,19 +411,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratedPopupPanel .popupTopCenter {
-	background: url(images/hborder.png) repeat-x;
 }
 
 .gwt-DecoratedPopupPanel .popupBottomCenter {
-	background: url(images/hborder.png) repeat-x 0px -4px;
 }
 
 .gwt-DecoratedPopupPanel .popupMiddleLeft {
-	background: url(images/vborder.png) repeat-y;
 }
 
 .gwt-DecoratedPopupPanel .popupMiddleRight {
-	background: url(images/vborder.png) repeat-y -4px 0px;
 }
 
 .gwt-DecoratedPopupPanel .popupTopLeftInner {
@@ -472,19 +447,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratedPopupPanel .popupTopLeft {
-	background: url(images/corner.png) no-repeat 0px -10px;
 }
 
 .gwt-DecoratedPopupPanel .popupTopRight {
-	background: url(images/corner.png) no-repeat -5px -10px;
 }
 
 .gwt-DecoratedPopupPanel .popupBottomLeft {
-	background: url(images/corner.png) no-repeat 0px -15px;
 }
 
 .gwt-DecoratedPopupPanel .popupBottomRight {
-	background: url(images/corner.png) no-repeat -5px -15px;
 }
 
 .gwt-PopupPanelGlass {
@@ -496,7 +467,6 @@ a, a:visited, a:hover {
 .gwt-PushButton-up, .gwt-PushButton-up-hovering, .gwt-PushButton-up-disabled, .gwt-PushButton-down, .gwt-PushButton-down-hovering, .gwt-PushButton-down-disabled {
 	margin: 0;
 	text-decoration: none;
-	background: url("images/hborder.png") repeat-x 0px -27px;
 }
 
 .gwt-PushButton-up, .gwt-PushButton-up-hovering, .gwt-PushButton-up-disabled {
@@ -566,7 +536,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-RichTextToolbar {
-	background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
+	background: #e3e8f3;
 	border-bottom: 1px solid #BBBBBB;
 	padding: 3px;
 	margin: 0px;
@@ -640,7 +610,7 @@ a, a:visited, a:hover {
 	padding: 3px;
 	border: 1px solid #bbbbbb;
 	border-bottom: 0px;
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -989px;
+	background: #d3def6;
 }
 
 .gwt-StackPanel .gwt-StackPanelContent {
@@ -674,12 +644,12 @@ a, a:visited, a:hover {
 
 .gwt-DecoratedStackPanel .stackItemTopLeft {
 	border-left: 1px solid #bbbbbb;
-	background: #d3def6 url(images/corner.png) no-repeat 0px -49px;
+	background: #d3def6;
 }
 
 .gwt-DecoratedStackPanel .stackItemTopRight {
 	border-right: 1px solid #bbbbbb;
-	background: #d3def6 url(images/corner.png) no-repeat -6px -49px;
+	background: #d3def6;
 }
 
 .gwt-DecoratedStackPanel .stackItemTopLeftInner, .gwt-DecoratedStackPanel .stackItemTopRightInner {
@@ -688,11 +658,10 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratedStackPanel .stackItemTopCenter {
-	background: url(images/hborder.png) 0px -21px repeat-x;
 }
 
 .gwt-DecoratedStackPanel .stackItemMiddleLeft {
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -989px;
+	background: #d3def6;
 	border-left: 1px solid #bbbbbb;
 }
 
@@ -702,14 +671,14 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratedStackPanel .stackItemMiddleRight {
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -989px;
+	background: #d3def6;
 	border-right: 1px solid #bbbbbb;
 }
 
 .gwt-DecoratedStackPanel .stackItemMiddleCenter {
 	font-weight: bold;
 	font-size: 1.3em;
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -989px;
+	background: #d3def6;
 }
 
 .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopRight, .gwt-DecoratedStackPanel .gwt-StackPanelItem-first .stackItemTopLeft {
@@ -744,19 +713,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-SuggestBoxPopup .suggestPopupTopCenter {
-	background: url(images/hborder.png) repeat-x;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupBottomCenter {
-	background: url(images/hborder.png) repeat-x 0px -4px;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupMiddleLeft {
-	background: url(images/vborder.png) repeat-y;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupMiddleRight {
-	background: url(images/vborder.png) repeat-y -4px 0px;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupTopLeftInner {
@@ -784,19 +749,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-SuggestBoxPopup .suggestPopupTopLeft {
-	background: url(images/corner.png) no-repeat 0px -23px;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupTopRight {
-	background: url(images/corner.png) no-repeat -5px -23px;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupBottomLeft {
-	background: url(images/corner.png) no-repeat 0px -28px;
 }
 
 .gwt-SuggestBoxPopup .suggestPopupBottomRight {
-	background: url(images/corner.png) no-repeat -5px -28px;
 }
 
 .gwt-TabBar {
@@ -877,11 +838,9 @@ a, a:visited, a:hover {
 }
 
 .gwt-DecoratedTabBar .tabTopLeft {
-	background: url(images/corner.png) no-repeat 0px -55px;
 }
 
 .gwt-DecoratedTabBar .tabTopRight {
-	background: url(images/corner.png) no-repeat -6px -55px;
 }
 
 .gwt-DecoratedTabBar .tabMiddleLeft, .gwt-DecoratedTabBar .tabMiddleRight {
@@ -950,7 +909,6 @@ a, a:visited, a:hover {
 .gwt-ToggleButton-up, .gwt-ToggleButton-up-hovering, .gwt-ToggleButton-up-disabled, .gwt-ToggleButton-down, .gwt-ToggleButton-down-hovering, .gwt-ToggleButton-down-disabled {
 	margin: 0;
 	text-decoration: none;
-	background: url("images/hborder.png") repeat-x 0px -27px;
 }
 
 .gwt-ToggleButton-up, .gwt-ToggleButton-up-hovering, .gwt-ToggleButton-up-disabled {
@@ -1015,7 +973,7 @@ a, a:visited, a:hover {
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
-	background: #93c2f1 url(images/hborder.png) repeat-x 0px -1463px;
+	background: #93c2f1;
 }
 
 .gwt-TreeItem .gwt-RadioButton input, .gwt-TreeItem .gwt-CheckBox input {
@@ -1132,11 +1090,11 @@ td.datePickerMonth, td.datePickerYear {
 	padding: 3px;
 	border: 1px solid #bbbbbb;
 	border-bottom: 0px;
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -989px;
+	background: #d3def6;
 }
 
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
-	background: #d3def6 url(images/hborder.png) repeat-x 0px -1464px;
+	background: #d3def6;
 }
 
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelContent {
@@ -1185,11 +1143,11 @@ td.datePickerMonth, td.datePickerYear {
 }
 
 .gwt-SplitLayoutPanel-HDragger {
-	background: #d0e4f6 url(images/splitPanelThumb.png) center center no-repeat;
+	background: #d0e4f6;
 	cursor: col-resize;
 }
 
 .gwt-SplitLayoutPanel-VDragger {
-	background: #d0e4f6 url(images/splitPanelThumb.png) center center no-repeat;
+	background: #d0e4f6;
 	cursor: row-resize;
 }

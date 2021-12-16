@@ -60,6 +60,9 @@ public class Stripboard implements EntryPoint {
 
 		@Source("icons\\empty.png")
 		ImageResource empty();
+		
+		@Source("icons\\arrow-180.png")
+		ImageResource arrow180();
 	}
 
 	public static final float		PI					= 3.14159f;
@@ -163,17 +166,14 @@ public class Stripboard implements EntryPoint {
 		mnuFile.addItem(new IconMenuItem("Save As...", RES.empty(), this::mnuSaveAs));
 
 		MenuBar mnuEdit = new MenuBar(true);
-		mnuEdit.addItem("Undo", () -> {
-		});
-		mnuEdit.addItem("Redo", () -> {
-		});
-		mnuEdit.addItem("Select All", () -> {
-		});
+		mnuEdit.addItem(new IconMenuItem("Undo", RES.arrow180(), () -> {}));
+		mnuEdit.addItem(new IconMenuItem("Redo", RES.empty(), () -> {}));
+		mnuEdit.addItem(new IconMenuItem("Select All", RES.empty(), () -> {}));
+		
 
 		MenuBar mnuHelp = new MenuBar(true);
-		mnuHelp.addItem("Help...", () -> {
-		});
-		mnuHelp.addItem("About...", this::mnuAbout);
+		mnuHelp.addItem(new IconMenuItem("Help...", RES.question(), () -> {}));
+		mnuHelp.addItem(new IconMenuItem("About...", RES.empty(), () -> {}));
 
 		// Make a new menu bar, adding a few cascading menus to it.
 		MenuBar menu = new MenuBar();
@@ -327,7 +327,7 @@ public class Stripboard implements EntryPoint {
 				Hole hole = brd.getHole(x, y);
 				if (hole.isBroken())
 					renderer.drawBreak(x, y);
-				if (hole.getPins().size() > 0)
+				if (hole.getPins().size() > 1)
 					errorholes.add(hole);
 			}
 		}

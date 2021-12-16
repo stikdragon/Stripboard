@@ -16,13 +16,16 @@ public class DragGhost {
 	private Vector2				tv		= new Vector2();
 	private Matrix3				tm		= new Matrix3();
 	private List<ComponentPoly>	polys;
+	private AppTheme theme;
 
-	public DragGhost(Object object, GhostType type, Vector2 downAt, Vector2 offset) {
+	public DragGhost(PointerTool tool, Object object, GhostType type, Vector2 downAt, Vector2 offset) {
 		super();
+		this.theme = tool.getApp().getTheme();
 		this.object = object;
 		this.type = type;
 		this.downAt = downAt;
 		this.offset = offset;
+		current.set(downAt);
 
 		if (type == GhostType.COMPONENT) {
 			ComponentInstance ci = (ComponentInstance) object;
@@ -74,11 +77,12 @@ public class DragGhost {
 		tv.set(current).add(offset);
 		tv.round();
 		if (type == GhostType.PIN) {
-			ctx.drawCircle(tv.x + 0.5f, tv.y + 0.5f, 0.5f, "red", "green");
+			ctx.drawCircle(tv.x + 0.5f, tv.y + 0.5f, 0.5f, theme.getGhostColour().css(), theme.getHighlightColour().css());
+			ctx.drawCircle(tv.x + 0.5f, tv.y + 0.5f, 0.75f, null, theme.getErrorColour().css());
 		} else if (type == GhostType.COMPONENT) {
 			tm.makeTranslation(tv);
 			for (ComponentPoly p : polys)
-				ctx.drawPoly("red", "green", tm, p);
+				ctx.drawPoly(theme.getGhostColour().css(), theme.getHighlightColour().css(), tm, p);
 		}
 	}
 

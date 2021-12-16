@@ -9,16 +9,22 @@ import uk.co.stikman.strip.client.math.Vector3;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.HitResult;
+import uk.co.stikman.strip.client.model.HitResultType;
 import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
 import uk.co.stikman.strip.client.util.Util;
 
 public class PointerTool extends AbstractTool {
 
-	private int		currentHoleX;
-	private int		currentHoleY;
-	private String	hilightColour;
-	private Object	selected	= null;
+	private int			currentHoleX;
+	private int			currentHoleY;
+	private String		hilightColour;
+	private Object		hover					= null;
+	private Object		mouseDownItem;
+	private DragGhost	ghost					= null;
+	private Vector2		mouseDownCursorPosition	= new Vector2();
+	private Vector2		mouseDownObjectPosition	= new Vector2();
+	private Vector2		tv						= new Vector2();
 
 	public PointerTool(Stripboard app) {
 		super(app);
@@ -28,6 +34,55 @@ public class PointerTool extends AbstractTool {
 	@Override
 	public void mouseDown(Vector2 pos, int button) {
 
+		List<HitResult> lst = new ArrayList<>();
+		getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
+		Object o = null;
+		if (!lst.isEmpty()) {
+			//
+			// work out what we want to drag. if there's a pin here that
+			// belongs to a stretchy component, then we pick that, otherwise
+			// we're dragging the entire component
+			//
+			for (HitResult hr : lst) {
+				if (hr.getType() == HitResultType.PIN_INSTANCE) {
+					PinInstance pi = (PinInstance) hr.getObject();
+					if (pi.getComponentInstance().getComponent().isStretchy()) {
+						o = pi;
+						break;
+					}
+				}
+			}
+
+			if (o == null) { // no stretchy pin, drag comp
+				for (HitResult hr : lst) {
+					if (hr.getType() == HitResultType.PIN_INSTANCE) {
+						PinInstance pi = (PinInstance) hr.getObject();
+						o = pi.getComponentInstance();
+					}
+				}
+			}
+
+			if (o == null) { // no pin at all
+				for (HitResult hr : lst)
+					if (hr.getType() == HitResultType.COMPONENT_INSTANCE)
+						o = hr.getObject();
+			}
+		}
+
+		if (o != null) {
+			mouseDownItem = o;
+			mouseDownCursorPosition.set(pos);
+
+			if (o instanceof PinInstance) {
+				ghost = new DragGhost(o, GhostType.PIN, pos, Vector2.ZERO);
+
+				mouseDownObjectPosition.set(((PinInstance) o).getPosition());
+			} else if (hover instanceof ComponentInstance) {
+				Vector2 dv = new Vector2(((ComponentInstance) o).getPin(0).getPosition()).sub(pos);
+				ghost = new DragGhost(o, GhostType.COMPONENT, pos, dv);
+				mouseDownObjectPosition.set(((ComponentInstance) o).getPin(0).getPosition());
+			}
+		}
 	}
 
 	@Override
@@ -35,20 +90,52 @@ public class PointerTool extends AbstractTool {
 		currentHoleX = (int) pos.x;
 		currentHoleY = (int) pos.y;
 
-		//
-		// see what's near this
-		//
-		List<HitResult> lst = new ArrayList<>();
-		getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
-		if (!lst.isEmpty()) {
-			selected = lst.get(0).getObject();
+		if (mouseDownItem != null) {
+			//
+			// drag operation taking place
+			//
+			ghost.setCurrentPosition(pos);
 		} else {
-			selected = null;
+			//
+			// see what's near this
+			//
+			List<HitResult> lst = new ArrayList<>();
+			getApp().getBoard().findThingsUnder(pos, lst, 0.1f);
+			if (!lst.isEmpty()) {
+				hover = lst.get(0).getObject();
+			} else {
+				hover = null;
+			}
 		}
 	}
 
 	@Override
 	public void mouseUp(Vector2 pos, int button) {
+		//
+		// if there was a drag op happening then apply the changes to the component
+		//
+		if (ghost != null) {
+			Vector2i finalpos = new Vector2i(ghost.getCurrentPosition().add(ghost.getOffset(), new Vector2()));
+			switch (ghost.getType()) {
+				case COMPONENT:
+					ComponentInstance ci = (ComponentInstance) ghost.getObject();
+					ci.getPin(0).setPosition(finalpos);
+					ci.updatePinPositions();
+					break;
+				case PIN:
+					//
+					// must be in a stretchy mode
+					//
+					PinInstance pi = (PinInstance) ghost.getObject();
+					pi.setPosition(finalpos);
+					break;
+			}
+
+			getApp().invalidate();
+		}
+		mouseDownItem = null;
+		ghost = null;
+
 	}
 
 	@Override
@@ -59,16 +146,16 @@ public class PointerTool extends AbstractTool {
 			ctx.fillRect(currentHoleX, currentHoleY, 1, 1);
 		}
 
-		if (selected != null) {
+		if (hover != null) {
 
 			//
 			// highlight the component with a border
 			//
 			ComponentInstance ci = null;
-			if (selected instanceof PinInstance)
-				ci = ((PinInstance) selected).getComponentInstance();
-			else if (selected instanceof ComponentInstance)
-				ci = (ComponentInstance) selected;
+			if (hover instanceof PinInstance)
+				ci = ((PinInstance) hover).getComponentInstance();
+			else if (hover instanceof ComponentInstance)
+				ci = (ComponentInstance) hover;
 
 			//
 			// draw a border
@@ -77,6 +164,10 @@ public class PointerTool extends AbstractTool {
 				Vector2i v = ci.getPin(0).getPosition();
 				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE);
 			}
+		}
+
+		if (ghost != null) {
+			ghost.render(getApp().getRenderer());
 		}
 	}
 

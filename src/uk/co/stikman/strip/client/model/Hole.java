@@ -1,12 +1,12 @@
 package uk.co.stikman.strip.client.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Hole {
 	private boolean				broken	= false;
-	private List<PinInstance>	pins	= null;
+	private Set<PinInstance>	pins	= null;
 	private int					x;
 	private int					y;
 
@@ -18,15 +18,15 @@ public class Hole {
 		this.broken = broken;
 	}
 
-	public List<PinInstance> getPins() {
+	public Set<PinInstance> getPins() {
 		if (pins == null)
-			return Collections.emptyList();
+			return Collections.emptySet();
 		return pins;
 	}
 
 	public void addPin(PinInstance pin) {
 		if (pins == null)
-			pins = new ArrayList<>();
+			pins = new HashSet<>();
 		pins.add(pin);
 	}
 
@@ -43,6 +43,11 @@ public class Hole {
 
 	public final int getX() {
 		return x;
+	}
+
+	public void removePin(PinInstance pin) {
+		if (pins != null)
+			pins.remove(pin);
 	}
 
 }

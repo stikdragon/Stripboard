@@ -32,6 +32,7 @@ public class ComponentInstance {
 	private Matrix3				tmpM		= new Matrix3();
 	private Board				board;
 	private Poly				outlinePoly;
+	private Vector2i tv = new Vector2i();
 
 	public ComponentInstance(Board board, Component component) {
 		super();
@@ -80,7 +81,7 @@ public class ComponentInstance {
 		// TODO: rotate
 		PinInstance one = pins.get(0);
 		for (int i = 1; i < pins.size(); ++i)
-			pins.get(i).getPosition().set(one.getPosition().x, one.getPosition().y).add(component.getPins().get(i).getPosition());
+			pins.get(i).setPosition(tv.set(one.getPosition().x, one.getPosition().y).add(component.getPins().get(i).getPosition()));
 	}
 
 	public final List<PinInstance> getPins() {
@@ -101,6 +102,7 @@ public class ComponentInstance {
 
 	private void modified() {
 		invalidateLayout();
+		getBoard().getPolyCache().remove(this);
 		getBoard().setModified(true);
 	}
 

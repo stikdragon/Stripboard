@@ -116,4 +116,10 @@ public class Vector2i {
 		return v;
 	}
 
+	public Vector2i sub(Vector2i v) {
+		this.x -= v.x;
+		this.y -= v.y;
+		return this;
+	}
+
 }

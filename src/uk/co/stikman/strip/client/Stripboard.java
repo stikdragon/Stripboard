@@ -299,7 +299,6 @@ public class Stripboard implements EntryPoint {
 
 	private void drawBoard(Board brd) {
 		Canvas cbrd = getBoardCanvas(brd);
-
 		cnv.getContext2d().drawImage(cbrd.getCanvasElement(), 0, 0);
 		List<Hole> errorholes = new ArrayList<>();
 		for (int y = 0; y < brd.getHeight(); ++y) {
@@ -307,7 +306,7 @@ public class Stripboard implements EntryPoint {
 				Hole hole = brd.getHole(x, y);
 				if (hole.isBroken())
 					renderer.drawBreak(x, y);
-				if (hole.getPins().size() > 1)
+				if (hole.getPins().size() > 0)
 					errorholes.add(hole);
 			}
 		}

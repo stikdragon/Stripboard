@@ -113,12 +113,6 @@ public class Vector2 {
 		return this;
 	}
 
-	public Vector2 copy(Vector2 v) {
-		this.x = v.x;
-		this.y = v.y;
-		return this;
-	}
-
 	@Override
 	public String toString() {
 		return x + "," + y;

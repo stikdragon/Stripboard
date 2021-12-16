@@ -16,8 +16,8 @@ public class PinInstance {
 	}
 
 	/**
-	 * for non-stretchy components this returns its model's pin position
-	 * relative to pin 0, otherwise it returns the local one
+	 * for non-stretchy components this returns its model's pin position relative to
+	 * pin 0, otherwise it returns the local one
 	 * 
 	 * @return
 	 */
@@ -34,7 +34,7 @@ public class PinInstance {
 
 	public final void setPosition(Vector2i position) {
 		this.position.set(position);
-		if (owner!=null)
+		if (owner != null) 
 			owner.pinChanged(this);
 	}
 

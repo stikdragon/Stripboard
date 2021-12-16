@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
@@ -17,6 +18,9 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.thirdparty.guava.common.io.Resources;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -25,6 +29,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -40,29 +45,47 @@ import uk.co.stikman.strip.client.model.Hole;
 import uk.co.stikman.strip.client.model.PinInstance;
 
 public class Stripboard implements EntryPoint {
-	public static final float	PI					= 3.14159f;
-	public static final float	PI2					= PI * 2;
+	interface StripResources extends ClientBundle {
+		@Source("icons\\new.png")
+		ImageResource new_();
 
-	private static final int	TOPSIZE				= 64;
-	private static final int	LEFTSIZE			= 220;
-	private static final float	COPPER_GAP			= 0.15f;
-	private static final float	HOLE_SIZE			= 0.2f;
-	public static final float	EXPAND_AMOUNT		= 0.4f;
+		@Source("icons\\question.png")
+		ImageResource question();
 
-	private Canvas				cnv;
-	private Board				board;
-	private AppTheme			theme				= new AppTheme();
-	private Matrix3				view				= new Matrix3();
-	private ComponentLibrary	library;
-	private AbstractTool		currentTool;
-	private Vector2				tmpv				= new Vector2();
-	private Matrix3				inverseView;
-	private RenderIntf			renderer;
-	private boolean				invalid;
-	private ToolPanel			toolPanel;
-	private ComponentRenderer	componentRenderer	= new ComponentRenderer(this);
-	private Canvas				boardCanvas;
-	private AppFileSystem fileSystem;
+		@Source("icons\\disk.png")
+		ImageResource disk();
+
+		@Source("icons\\folder-horizontal-open.png")
+		ImageResource folder();
+
+		@Source("icons\\empty.png")
+		ImageResource empty();
+	}
+
+	public static final float		PI					= 3.14159f;
+	public static final float		PI2					= PI * 2;
+
+	private static final int		TOPSIZE				= 64;
+	private static final int		LEFTSIZE			= 220;
+	private static final float		COPPER_GAP			= 0.15f;
+	private static final float		HOLE_SIZE			= 0.2f;
+	public static final float		EXPAND_AMOUNT		= 0.4f;
+
+	private Canvas					cnv;
+	private Board					board;
+	private AppTheme				theme				= new AppTheme();
+	private Matrix3					view				= new Matrix3();
+	private ComponentLibrary		library;
+	private AbstractTool			currentTool;
+	private Vector2					tmpv				= new Vector2();
+	private Matrix3					inverseView;
+	private RenderIntf				renderer;
+	private boolean					invalid;
+	private ToolPanel				toolPanel;
+	private ComponentRenderer		componentRenderer	= new ComponentRenderer(this);
+	private Canvas					boardCanvas;
+	private AppFileSystem			fileSystem;
+	private static StripResources	RES					= GWT.create(StripResources.class);
 
 	public void onModuleLoad() {
 		RootLayoutPanel root = RootLayoutPanel.get();
@@ -94,7 +117,7 @@ public class Stripboard implements EntryPoint {
 		root.setWidgetTopBottom(toolPanel, TOPSIZE, Unit.PX, 0, Unit.PX);
 
 		fileSystem = new LocalStorageFS();
-		
+
 		Window.addResizeHandler(this::resize);
 		Scheduler.get().scheduleDeferred(() -> {
 			resize(null);
@@ -116,6 +139,10 @@ public class Stripboard implements EntryPoint {
 		AboutDialog dlg = new AboutDialog(this);
 		dlg.show();
 	}
+
+	private void mnuSaveAs() {
+	}
+
 	private void mnuSave() {
 		if (board.getFilename() != null) {
 			fileSystem.save(board.getFilename(), board.toJSON());
@@ -123,7 +150,7 @@ public class Stripboard implements EntryPoint {
 			//
 			// pick filename
 			//
-			SaveFileDialog dlg  = new SaveFileDialog(this, "Save", null);
+			SaveFileDialog dlg = new SaveFileDialog(this, "Save", null);
 			dlg.show();
 		}
 	}
@@ -131,10 +158,9 @@ public class Stripboard implements EntryPoint {
 	private Widget createMenu() {
 
 		MenuBar mnuFile = new MenuBar(true);
-		mnuFile.addItem("New", this::mnuNew);
-		mnuFile.addItem("Save", this::mnuSave);
-		mnuFile.addItem("Save As...", () -> {
-		});
+		mnuFile.addItem(new IconMenuItem("New", RES.new_(), this::mnuNew));
+		mnuFile.addItem(new IconMenuItem("Save", RES.disk(), this::mnuSave));
+		mnuFile.addItem(new IconMenuItem("Save As...", RES.empty(), this::mnuSaveAs));
 
 		MenuBar mnuEdit = new MenuBar(true);
 		mnuEdit.addItem("Undo", () -> {

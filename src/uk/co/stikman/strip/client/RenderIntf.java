@@ -168,7 +168,26 @@ public class RenderIntf {
 
 	}
 
-	public void drawWire(Vector2i a, Vector2i b) {
+	public void drawWire(float x0, float y0, float x1, float y1, Matrix3 xfm) {
+		Matrix3 m = getTransformView(xfm);
+		m.multiply(tmpv.set(x0, y0, 1.0f), tmpv2);
+		float fx0 = tmpv2.x;
+		float fy0 = tmpv2.y;
+		m.multiply(tmpv.set(x1, y1, 1.0f), tmpv2);
+		float fx1 = tmpv2.x;
+		float fy1 = tmpv2.y;
+
+		context.setStrokeStyle(wireColour);
+		context.setLineWidth(6.0f);
+		context.beginPath();
+		context.moveTo(fx0, fy0);
+		context.lineTo(fx1, fy1);
+		context.stroke();
+	}
+
+	
+	
+	public void drawWireOld(Vector2i a, Vector2i b) {
 		//
 		// draw an inner wire in lead colour, then an outer one that's shorter and fatter
 		//

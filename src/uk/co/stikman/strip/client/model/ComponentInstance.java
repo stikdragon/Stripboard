@@ -130,9 +130,9 @@ public class ComponentInstance {
 		for (ComponentPoly p : polys) {
 			Path pth = new Path();
 
-			if (p.getType() == ComponentPolyType.OPEN) {
+			if (p.getType().isLine()) {
 				//
-				// a lead, so make it an infinitely thin polygon which satisfies clipper
+				// a line, so make it an infinitely thin polygon which satisfies clipper
 				//
 				float[] arr = p.getVerts();
 				for (int i = 0; i < arr.length; i += 2)

@@ -1,8 +1,11 @@
-<h2>Stripboard Editor</h2>
-<p>By Stik (<a href="mailto@stikdragon@gmail.com">stikdragon@gmail.com</a>)</p>
-<h3>Thanks to the authors of the following libraries:</h3>
-<ul>
-<li><b>Clipper</b>, by angusjs.com, ported to java by <b>lightbringer</b> on github</li>
-<li><b>GWT</b>, by Google</li>
-<li><b>Fugue Icons</b>, by p.yusukekamiyamane.com</li>
-</ul>
+
+<div style="padding:8px">
+	<h2>Stripboard Editor</h2>
+	<p>By Stik (<a href="mailto@stikdragon@gmail.com">stikdragon@gmail.com</a>)</p>
+	<h3>Thanks to the authors of the following libraries:</h3>
+	<ul>
+	<li><b>Clipper</b>, by angusjs.com, ported to java by <b>lightbringer</b> on github</li>
+	<li><b>GWT</b>, by Google</li>
+	<li><b>Fugue Icons</b>, by p.yusukekamiyamane.com</li>
+	</ul>
+</div>

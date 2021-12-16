@@ -36,7 +36,7 @@ public class WireVismod implements ComponentVisualModel {
 		if (!(x0 == p2.getPosition().x && y0 == p2.getPosition().y)) {
 			ctx.drawPin(p1.getPosition().x, p1.getPosition().y, state);
 			ctx.drawPin(p2.getPosition().x, p2.getPosition().y, state);
-			ctx.drawWire(p1.getPosition(), p2.getPosition());
+//			ctx.drawWire(p1.getPosition(), p2.getPosition());
 		}
 	}
 

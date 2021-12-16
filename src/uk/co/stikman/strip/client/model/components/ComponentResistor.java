@@ -106,7 +106,7 @@ public class ComponentResistor extends Component {
 				verts[i] = out.x;
 				verts[i + 1] = out.y;
 			}
-			polys.add(new ComponentPoly(ComponentPolyType.CLOSED, verts));
+			polys.add(new ComponentPoly(ComponentPolyType.BODY, verts));
 
 			//
 			// so leg from p1->[0,1]  and [24,25]->p0
@@ -116,14 +116,14 @@ public class ComponentResistor extends Component {
 			leg[1] = dy + 0.5f;
 			leg[2] = verts[24] - udx * 0.1f;
 			leg[3] = verts[25] - udy * 0.1f;
-			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
+			polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
 
 			leg = new float[4];
 			leg[0] = verts[0] + udx * 0.1f;
 			leg[1] = verts[1] + udy * 0.1f;
 			leg[2] = 0.5f;
 			leg[3] = 0.5f;
-			polys.add(new ComponentPoly(ComponentPolyType.OPEN, leg));
+			polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
 
 			cache.put(inst, polys);
 		}

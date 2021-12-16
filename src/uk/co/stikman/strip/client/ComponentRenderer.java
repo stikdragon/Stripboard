@@ -67,16 +67,24 @@ public class ComponentRenderer {
 			} else {
 				for (ComponentPoly p : polys) {
 					switch (p.getType()) {
-					case CLOSED:
+					case BODY:
 						ctx.drawPoly(app.getTheme().getComponentFill().css(), app.getTheme().getComponentOutline().css(), tmpm, p);
 						break;
 
-					case OPEN:
+					case LEAD:
 						// 
 						// a line (or lead maybe?)
 						//
 						float[] a = p.getVerts();
 						ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
+						break;
+						
+					case WIRE:
+						// 
+						// a line (or lead maybe?)
+						//
+						a = p.getVerts();
+						ctx.drawWire(a[0], a[1], a[2], a[3], tmpm);
 						break;
 					}
 				}

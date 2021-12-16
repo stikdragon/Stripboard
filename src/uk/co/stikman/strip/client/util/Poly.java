@@ -91,7 +91,7 @@ public class Poly {
 		if (b < 0 || b > 1 || a < 0 || a > 1)
 			return false;
 		if (res != null)
-			res.set(a0).addMultiplyLocal(adir, b);
+			res.set(a0).addMultiply(adir, b);
 		return true;
 	}
 

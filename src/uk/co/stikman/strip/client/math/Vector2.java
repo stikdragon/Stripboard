@@ -118,9 +118,10 @@ public class Vector2 {
 		return x + "," + y;
 	}
 
-	public void addMultiplyLocal(Vector2 v, float scale) {
+	public Vector2 addMultiply(Vector2 v, float scale) {
 		x += v.x * scale;
 		y += v.y * scale;
+		return this;
 	}
 
 	public float distanceToSq(Vector2 v) {

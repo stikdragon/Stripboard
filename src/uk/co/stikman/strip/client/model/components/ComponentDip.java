@@ -65,7 +65,7 @@ public class ComponentDip extends Component {
 
 	@Override
 	public List<ComponentPoly> getPolys(ComponentInstance inst) {
-		ComponentPoly p = new ComponentPoly(ComponentPolyType.CLOSED);
+		ComponentPoly p = new ComponentPoly(ComponentPolyType.BODY);
 		p.setVerts(generateVerts());
 		return Collections.singletonList(p);
 	}

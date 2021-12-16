@@ -170,10 +170,9 @@ public class Stripboard implements EntryPoint {
 		mnuEdit.addItem(new IconMenuItem("Redo", RES.empty(), () -> {}));
 		mnuEdit.addItem(new IconMenuItem("Select All", RES.empty(), () -> {}));
 		
-
 		MenuBar mnuHelp = new MenuBar(true);
 		mnuHelp.addItem(new IconMenuItem("Help...", RES.question(), () -> {}));
-		mnuHelp.addItem(new IconMenuItem("About...", RES.empty(), () -> {}));
+		mnuHelp.addItem(new IconMenuItem("About...", RES.empty(), this::mnuAbout));
 
 		// Make a new menu bar, adding a few cascading menus to it.
 		MenuBar menu = new MenuBar();

@@ -1,5 +1,6 @@
 package uk.co.stikman.strip.client.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,6 +142,44 @@ public class Board {
 		jo.put("components", arr);
 
 		return root;
+	}
+
+	public void fromJSON(JSONObject root, ComponentLibrary library) {
+		if (1 != root.getInt("version"))
+			throw new RuntimeException("Invalid board version");
+		
+		root = root.getObject("board");
+		width = root.getInt("width");
+		height = root.getInt("width");
+		
+		components.clear();
+		holes = new Hole[width * height];
+		for (int i = 0; i < holes.length; ++i)
+			holes[i] = new Hole(i % width, i / width);
+		
+		JSONArray arr = root.getArray("breaks");
+		for (int i = 0; i < arr.size();++i) {
+			String s = arr.getString(i);
+			Vector2i v = Vector2i.parse(s);
+			getHole(v).setBroken(true);
+		}
+		
+		arr = root.getArray("components");
+		for (int i = 0; i < arr.size(); ++i) {
+			JSONObject jo = arr.getObject(i);
+			String m = jo.getString("model");
+			Component model = library.get(m);
+			ComponentInstance ci = new ComponentInstance(this, model);
+			JSONArray arr2 = jo.getArray("pins");
+			for (int j = 0; j < arr2.size(); ++j) {
+				Vector2i v = Vector2i.parse(arr2.getString(j));
+				ci.getPin(j).setPosition(v);
+			}
+			components.add(ci);
+		}
+		
+		updatePinPositions();
+		
 	}
 
 	/**

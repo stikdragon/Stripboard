@@ -52,7 +52,7 @@ public class JSONArray {
 			return ((JSONArray) o);
 		throw new JSONException("[" + idx + "] is not an array");
 	}
-	
+
 	public int size() {
 		return lst.size();
 	}
@@ -80,6 +80,10 @@ public class JSONArray {
 	public JSONArray add(JSONArray arr) {
 		lst.add(arr);
 		return this;
+	}
+
+	void addObj(Object val) {
+		lst.add(val);
 	}
 
 }

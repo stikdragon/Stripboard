@@ -111,8 +111,8 @@ public class Vector2i {
 		if (bits.length != 2)
 			throw new IllegalArgumentException("Expected x,y");
 		Vector2i v = new Vector2i();
-		v.x = Integer.parseInt(bits[0]);
-		v.y = Integer.parseInt(bits[1]);
+		v.x = Integer.parseInt(bits[0].trim());
+		v.y = Integer.parseInt(bits[1].trim());
 		return v;
 	}
 

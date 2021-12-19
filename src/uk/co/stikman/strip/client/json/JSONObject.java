@@ -53,7 +53,6 @@ public class JSONObject {
 	}
 
 	public JSONObject put(String k, int val) {
-		
 		map.put(k, Integer.valueOf(val));
 		return this;
 	}
@@ -89,6 +88,10 @@ public class JSONObject {
 
 	public String toString() {
 		return new JSONFormatter().format(this);
+	}
+
+	void put(String k, Object val) {
+		map.put(k, val);
 	}
 
 }

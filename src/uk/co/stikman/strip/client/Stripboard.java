@@ -145,7 +145,13 @@ public class Stripboard implements EntryPoint {
 	}
 
 	private void mnuOpen() {
-
+		FileDialog dlg = new FileDialog(this, Mode.LOAD, "Load", null);
+		dlg.setOnOK(name -> {
+			board.setFilename(name);
+			board.fromJSON(fileSystem.fetch(name), library);
+			render();
+		});
+		dlg.show();
 	}
 
 	private void mnuSaveAs() {
@@ -427,5 +433,9 @@ public class Stripboard implements EntryPoint {
 
 	public final ComponentRenderer getComponentRenderer() {
 		return componentRenderer;
+	}
+
+	public final AppFileSystem getFileSystem() {
+		return fileSystem;
 	}
 }

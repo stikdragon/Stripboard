@@ -56,4 +56,8 @@ public abstract class StripDialog extends DialogBox {
 		btn.addClickHandler(x -> onClick.accept(id));
 	}
 
+	public final Stripboard getApp() {
+		return app;
+	}
+
 }

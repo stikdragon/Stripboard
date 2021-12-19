@@ -3,6 +3,7 @@ package uk.co.stikman.strip.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.stikman.strip.client.json.JSONArray;
 import uk.co.stikman.strip.client.json.JSONObject;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
@@ -115,8 +116,31 @@ public class Board {
 	}
 
 	public JSONObject toJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject root = new JSONObject();
+
+		root.put("version", 1);
+		root.put("modified", System.currentTimeMillis());
+		root.put("createdBy", "Stik's Stripboard Editor");
+
+		JSONObject jo = new JSONObject();
+		root.put("board", jo);
+
+		jo.put("width", width);
+		jo.put("height", height);
+
+		JSONArray arr = new JSONArray();
+		for (Hole h : holes) {
+			if (h.isBroken())
+				arr.add(h.getX() + "," + h.getY());
+		}
+		jo.put("breaks", arr);
+
+		arr = new JSONArray();
+		for (ComponentInstance c : components)
+			arr.add(c.toJSON());
+		jo.put("components", arr);
+
+		return root;
 	}
 
 	/**

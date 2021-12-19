@@ -12,6 +12,8 @@ import de.lighti.clipper.DefaultClipper;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
 import de.lighti.clipper.Point.LongPoint;
+import uk.co.stikman.strip.client.json.JSONArray;
+import uk.co.stikman.strip.client.json.JSONObject;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.util.Poly;
@@ -164,6 +166,18 @@ public class ComponentInstance {
 			res[i++] = (float) lp.getY() / 1000.0f;
 		}
 		outlinePoly = new Poly(res);
+	}
+
+	public JSONObject toJSON() {
+		JSONObject jo = new JSONObject();
+		jo.put("name", name);
+		jo.put("model", component.getName());
+		jo.put("rot", rotation);
+		JSONArray arr = new JSONArray();
+		for (PinInstance p : pins) 
+			arr.add(p.getPosition().x + "," + p.getPosition().y);
+		jo.put("pins", arr);
+		return jo;
 	}
 
 }

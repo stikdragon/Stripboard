@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import uk.co.stikman.strip.client.FileDialog.Mode;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.model.Board;
@@ -60,7 +61,7 @@ public class Stripboard implements EntryPoint {
 
 		@Source("icons\\empty.png")
 		ImageResource empty();
-		
+
 		@Source("icons\\arrow-180.png")
 		ImageResource arrow180();
 	}
@@ -119,7 +120,7 @@ public class Stripboard implements EntryPoint {
 		root.setWidgetLeftWidth(toolPanel, 0, Unit.PX, LEFTSIZE, Unit.PX);
 		root.setWidgetTopBottom(toolPanel, TOPSIZE, Unit.PX, 0, Unit.PX);
 
-		fileSystem = new LocalStorageFS();
+		fileSystem = new LocalStorageFS("stripboard");
 
 		Window.addResizeHandler(this::resize);
 		Scheduler.get().scheduleDeferred(() -> {
@@ -143,6 +144,10 @@ public class Stripboard implements EntryPoint {
 		dlg.show();
 	}
 
+	private void mnuOpen() {
+
+	}
+
 	private void mnuSaveAs() {
 	}
 
@@ -153,7 +158,11 @@ public class Stripboard implements EntryPoint {
 			//
 			// pick filename
 			//
-			SaveFileDialog dlg = new SaveFileDialog(this, "Save", null);
+			FileDialog dlg = new FileDialog(this, Mode.SAVE, "Save", null);
+			dlg.setOnOK(name -> {
+				board.setFilename(name);
+				fileSystem.save(board.getFilename(), board.toJSON());
+			});
 			dlg.show();
 		}
 	}
@@ -162,16 +171,21 @@ public class Stripboard implements EntryPoint {
 
 		MenuBar mnuFile = new MenuBar(true);
 		mnuFile.addItem(new IconMenuItem("New", RES.new_(), this::mnuNew));
+		mnuFile.addItem(new IconMenuItem("Open", RES.folder(), this::mnuOpen));
 		mnuFile.addItem(new IconMenuItem("Save", RES.disk(), this::mnuSave));
 		mnuFile.addItem(new IconMenuItem("Save As...", RES.empty(), this::mnuSaveAs));
 
 		MenuBar mnuEdit = new MenuBar(true);
-		mnuEdit.addItem(new IconMenuItem("Undo", RES.arrow180(), () -> {}));
-		mnuEdit.addItem(new IconMenuItem("Redo", RES.empty(), () -> {}));
-		mnuEdit.addItem(new IconMenuItem("Select All", RES.empty(), () -> {}));
-		
+		mnuEdit.addItem(new IconMenuItem("Undo", RES.arrow180(), () -> {
+		}));
+		mnuEdit.addItem(new IconMenuItem("Redo", RES.empty(), () -> {
+		}));
+		mnuEdit.addItem(new IconMenuItem("Select All", RES.empty(), () -> {
+		}));
+
 		MenuBar mnuHelp = new MenuBar(true);
-		mnuHelp.addItem(new IconMenuItem("Help...", RES.question(), () -> {}));
+		mnuHelp.addItem(new IconMenuItem("Help...", RES.question(), () -> {
+		}));
 		mnuHelp.addItem(new IconMenuItem("About...", RES.empty(), this::mnuAbout));
 
 		// Make a new menu bar, adding a few cascading menus to it.

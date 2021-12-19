@@ -11,7 +11,8 @@ public abstract class Component {
 	private String		desc;
 	private List<Pin>	pins	= new ArrayList<>();
 	private Vector2i	size	= null;
-
+	private String prefix = "X";
+	
 	public Component(String group, String name) {
 		super();
 		this.group = group;
@@ -79,5 +80,13 @@ public abstract class Component {
 	 * @return
 	 */
 	public abstract List<ComponentPoly> getPolys(ComponentInstance inst);
+
+	public final String getPrefix() {
+		return prefix;
+	}
+
+	public final void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 
 }

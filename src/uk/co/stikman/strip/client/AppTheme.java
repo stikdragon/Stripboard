@@ -16,6 +16,7 @@ public class AppTheme {
 	private Colour	wireColour			= new Colour("707ff0D1");
 	private Colour	ghostColour			= new Colour("FFFFFF7C");
 	private Colour	errorColour			= new Colour("FF4040C0");
+	private Colour	textColour			= new Colour("FFFFFF");
 
 	public AppTheme() {
 		super();
@@ -67,6 +68,10 @@ public class AppTheme {
 
 	public final Colour getErrorColour() {
 		return errorColour;
+	}
+
+	public final Colour getTextColour() {
+		return textColour;
 	}
 
 }

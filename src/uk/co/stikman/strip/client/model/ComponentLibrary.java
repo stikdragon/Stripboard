@@ -42,15 +42,14 @@ public class ComponentLibrary {
 			default: throw new NoSuchElementException("Component type [" + s + "] not recognised");
 			}
 			//@formatter:on
-			
-			
+
 			String[] bits = sect.getName().split("/");
 			String grup = bits.length == 2 ? bits[0] : null;
 			String name = bits.length == 2 ? bits[1] : bits[0];
-			
+
 			switch (typ) {
 			case IC_DIP:
-				comp =new ComponentDip(grup, name);  
+				comp = new ComponentDip(grup, name);
 				break;
 			case R:
 				comp = new ComponentResistor(grup, name);
@@ -63,7 +62,7 @@ public class ComponentLibrary {
 			default:
 				throw new NoSuchElementException("component type [" + typ + "] not supported");
 			}
-			
+
 			comp.setDesc(comp.getName());
 			if (sect.containsKey("desc"))
 				comp.setDesc(sect.get("desc"));
@@ -77,10 +76,12 @@ public class ComponentLibrary {
 					if (bits.length != 2 && bits.length != 3)
 						throw new IllegalArgumentException("Expected two or three arguments for a pin");
 					comp.getPins().get(n).getPosition().set(Integer.parseInt(bits[0]), Integer.parseInt(bits[1]));
+					if (bits.length > 2)
+						comp.getPins().get(n).setName(bits[2]);
 				}
 			}
 			comp.calcSize();
-
+			comp.setPrefix(sect.containsKey("prefix") ? sect.get("prefix") : "X");
 			components.put(comp.getName(), comp);
 		}
 

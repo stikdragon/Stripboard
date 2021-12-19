@@ -1,8 +1,9 @@
 package uk.co.stikman.strip.client.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.co.stikman.strip.client.json.JSONArray;
 import uk.co.stikman.strip.client.json.JSONObject;
@@ -14,10 +15,11 @@ public class Board {
 	private int						width;
 	private int						height;
 	private Hole[]					holes;
-	private List<ComponentInstance>	components	= new ArrayList<>();
-	private PolyCache				polyCache	= new PolyCache();
+	private List<ComponentInstance>	components		= new ArrayList<>();
+	private PolyCache				polyCache		= new PolyCache();
 	private boolean					modified;
 	private String					filename;
+	private Map<String, Integer>	prefixCounter	= new HashMap<>();
 
 	public Board(int width, int height) {
 		this.width = width;
@@ -61,6 +63,14 @@ public class Board {
 		components.add(inst);
 		for (PinInstance p : inst.getPins())
 			getHole(p.getPosition().x, p.getPosition().y).addPin(p);
+
+		//
+		// find a new ID for it
+		//
+		String p = inst.getComponent().getPrefix();
+		int n = prefixCounter.containsKey(p) ? prefixCounter.get(p) : 1;
+		prefixCounter.put(p, Integer.valueOf(n + 1));
+		inst.setName(p + n);
 		modified = true;
 	}
 
@@ -147,23 +157,23 @@ public class Board {
 	public void fromJSON(JSONObject root, ComponentLibrary library) {
 		if (1 != root.getInt("version"))
 			throw new RuntimeException("Invalid board version");
-		
+
 		root = root.getObject("board");
 		width = root.getInt("width");
 		height = root.getInt("width");
-		
+
 		components.clear();
 		holes = new Hole[width * height];
 		for (int i = 0; i < holes.length; ++i)
 			holes[i] = new Hole(i % width, i / width);
-		
+
 		JSONArray arr = root.getArray("breaks");
-		for (int i = 0; i < arr.size();++i) {
+		for (int i = 0; i < arr.size(); ++i) {
 			String s = arr.getString(i);
 			Vector2i v = Vector2i.parse(s);
 			getHole(v).setBroken(true);
 		}
-		
+
 		arr = root.getArray("components");
 		for (int i = 0; i < arr.size(); ++i) {
 			JSONObject jo = arr.getObject(i);
@@ -177,9 +187,9 @@ public class Board {
 			}
 			components.add(ci);
 		}
-		
+
 		updatePinPositions();
-		
+
 	}
 
 	/**

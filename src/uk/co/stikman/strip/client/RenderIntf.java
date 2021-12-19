@@ -1,5 +1,7 @@
 package uk.co.stikman.strip.client;
 
+import java.awt.Color;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.CssColor;
 
@@ -22,6 +24,7 @@ public class RenderIntf {
 	private String				breakcolour;
 	private String				ghostColour;
 	private String				errorColour;
+	private String textColour;
 	private Vector3				tmpv	= new Vector3();
 	private Vector3				tmpv2	= new Vector3();
 	private Vector3				tmpv3	= new Vector3();
@@ -41,6 +44,7 @@ public class RenderIntf {
 		wireColour = app.getTheme().getWireColour().css();
 		ghostColour = app.getTheme().getGhostColour().css();
 		errorColour = app.getTheme().getErrorColour().css();
+		textColour = app.getTheme().getTextColour().css();
 	}
 
 	public final Matrix3 getView() {
@@ -268,4 +272,18 @@ public class RenderIntf {
 			setLineDash(context, new int[] {});
 	}
 
+	public void drawText(String text, Vector2i pos, TextType type) {
+		tmpv.set(pos.x, pos.y, 1.0f);
+		view.multiply(tmpv, tmpv2);
+		int x = (int) tmpv2.x;
+		int y = (int) tmpv2.y;
+		
+		context.setLineWidth(3.0f);
+		context.setStrokeStyle("black");
+		context.strokeText(text, x, y);
+		
+		context.setFillStyle(textColour);
+		context.fillText(text, x, y);
+	}
+	
 }

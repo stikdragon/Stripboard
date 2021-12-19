@@ -89,6 +89,7 @@ public class Stripboard implements EntryPoint {
 	private ComponentRenderer		componentRenderer	= new ComponentRenderer(this);
 	private Canvas					boardCanvas;
 	private AppFileSystem			fileSystem;
+	private ViewStates				viewStates			= new ViewStates();
 	private static StripResources	RES					= GWT.create(StripResources.class);
 
 	public void onModuleLoad() {
@@ -274,7 +275,7 @@ public class Stripboard implements EntryPoint {
 		render();
 	}
 
-	private void render() {
+	public void render() {
 		invalid = false;
 		drawBoard(board);
 		if (currentTool == null)
@@ -351,9 +352,13 @@ public class Stripboard implements EntryPoint {
 			}
 		}
 
+		boolean names = viewStates.isOn(ViewStates.COMPONENT_NAME);
+		boolean pinnames = viewStates.isOn(ViewStates.PIN_NAME);
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
-			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
+			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL, pinnames);
+			if (names)
+				renderer.drawText(comp.getName(), p.getPosition(), TextType.SMALL);
 		}
 
 		for (Hole h : errorholes)
@@ -437,5 +442,9 @@ public class Stripboard implements EntryPoint {
 
 	public final AppFileSystem getFileSystem() {
 		return fileSystem;
+	}
+
+	public ViewStates getViewStates() {
+		return viewStates;
 	}
 }

@@ -16,14 +16,15 @@
 [Integrated Circuits/555]
 desc=555 Timer
 0=0,0,GND
-1=0,1,
-2=0,2,
-3=0,3,
-4=3,0,
-5=3,1,
-6=3,2,
-7=3,3,VCC
+1=0,1,Trg
+2=0,2,Out
+3=0,3,Rst
+4=3,3,CV
+5=3,2,Thr
+6=3,1,Dis
+7=3,0,VCC
 type=IC_DIP
+prefix=U
 
 
 [General/R]
@@ -31,6 +32,7 @@ desc=Resistor
 type=R
 0=0,0
 1=3,0
+prefix=R
 
 
 [General/C-Radial]
@@ -38,6 +40,7 @@ type=C-Radial
 desc=Radial Capacitor
 0=0,0
 1=2,0
+prefix=C
 
 
 [General/C-Axial]
@@ -45,6 +48,7 @@ type=C-Axial
 desc=Axial Capacitor
 0=0,0
 1=3,0
+prefix=C
 
 
 [General/C-Disc]
@@ -52,6 +56,7 @@ type=C-Disc
 desc=Disc Shaped Capacitor
 0=0,0
 1=2,0
+prefix=C
 
 
 

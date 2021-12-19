@@ -125,7 +125,7 @@ public class PointerTool extends AbstractTool {
 					for (PinInstance p : ci.getPins()) {
 						p.setPosition(p.getPosition().add(delta));
 					}
-					
+
 				} else {
 					//
 					// just update the anchor pin
@@ -174,7 +174,7 @@ public class PointerTool extends AbstractTool {
 			//
 			if (ci != null) {
 				Vector2i v = ci.getPin(0).getPosition();
-				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE);
+				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE, false);
 			}
 		}
 
@@ -192,17 +192,41 @@ public class PointerTool extends AbstractTool {
 				hole.setBroken(!hole.isBroken());
 				getApp().invalidate();
 			}
+		} else if (ch == 'z') {
+			renameHover();
+		} else if (ch == 'v') {
+			toggleViews();
 		}
+	}
+
+	private void toggleViews() {
+		ToggleViewDlg dlg = new ToggleViewDlg(getApp());
+	}
+
+	private void renameHover() {
+		if (hover == null)
+			return;
+		ComponentInstance ci = null;
+		if (hover instanceof PinInstance) {
+			ci = ((PinInstance) hover).getComponentInstance();
+		} else if (hover instanceof ComponentInstance) {
+			ci = (ComponentInstance) hover;
+		}
+		
+		RenameComponentDlg dlg = new RenameComponentDlg(getApp(), ci);
+
 	}
 
 	@Override
 	protected void fillActionList(List<ToolUIHint> lst) {
 		super.fillActionList(lst);
-		lst.add(new ToolUIHint("I/E", "Add component"));
+		lst.add(new ToolUIHint("E", "Add component"));
 		lst.add(new ToolUIHint("DEL", "Delete"));
 		lst.add(new ToolUIHint("X", "Break/Unbreak"));
 		lst.add(new ToolUIHint("R", "Rotate"));
 		lst.add(new ToolUIHint("W", "Add wire"));
+		lst.add(new ToolUIHint("Z", "Edit name"));
+		lst.add(new ToolUIHint("V", "Toggle views"));
 	}
 
 }

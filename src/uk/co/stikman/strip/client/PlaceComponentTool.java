@@ -113,7 +113,7 @@ public class PlaceComponentTool extends AbstractTool {
 		getApp().getBoard().getPolyCache().remove(inst);
 
 		Vector2i p = inst.getPin(0).getPosition();
-		getRenderer().render(getApp(), inst, p.x, p.y, state); // placed determines what state to draw it in
+		getRenderer().render(getApp(), inst, p.x, p.y, state, false); // placed determines what state to draw it in
 
 	}
 

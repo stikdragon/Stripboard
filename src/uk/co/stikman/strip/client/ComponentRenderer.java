@@ -40,11 +40,12 @@ public class ComponentRenderer {
 	 * @param comp
 	 * @param x0
 	 * @param y0
+	 * @param pinnames 
 	 * @param ghost
 	 * @param x1
 	 * @param y1
 	 */
-	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state) {
+	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state, boolean pinnames) {
 		RenderIntf ctx = app.getRenderer();
 
 		List<ComponentPoly> polys = comp.getComponent().getPolys(comp);
@@ -53,8 +54,12 @@ public class ComponentRenderer {
 		} else {
 			tmpm.makeTranslation(x0, y0);
 
-			for (PinInstance pin : comp.getPins())
+			for (PinInstance pin : comp.getPins()) {
 				ctx.drawPin(pin.getPosition().x, pin.getPosition().y, state);
+				if (pinnames) {
+					ctx.drawText(pin.getModel().getName(), pin.getPosition(), TextType.SMALL);
+				}
+			}
 
 			if (state == RenderState.OUTLINE) {
 				//

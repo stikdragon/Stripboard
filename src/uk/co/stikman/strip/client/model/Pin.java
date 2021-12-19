@@ -6,6 +6,7 @@ public class Pin {
 	private Component	owner;
 	private int			id;
 	private Vector2i	position	= new Vector2i();
+	private String		name;
 
 	public final Component getOwner() {
 		return owner;
@@ -28,5 +29,13 @@ public class Pin {
 
 	public Vector2i getPosition() {
 		return position;
+	}
+
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
+		this.name = name;
 	}
 }

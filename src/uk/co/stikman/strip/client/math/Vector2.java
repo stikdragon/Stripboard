@@ -294,4 +294,10 @@ public class Vector2 {
 		y = (int)y;
 	}
 
+	public Vector2 add(Vector2i v) {
+		x += v.x;
+		y += v.y;
+		return this;
+	}
+
 }

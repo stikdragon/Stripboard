@@ -3,8 +3,6 @@ package uk.co.stikman.strip.client;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.james.mime4j.message.TextBody;
-
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.LayoutPanel;

@@ -1,6 +1,6 @@
 package uk.co.stikman.strip.client;
 
 public enum TextType {
-	SMALL,
-	NORMAL
+	PIN_LABEL,
+	COMP_LABEL
 }

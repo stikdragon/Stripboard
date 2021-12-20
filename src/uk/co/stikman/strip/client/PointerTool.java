@@ -174,7 +174,7 @@ public class PointerTool extends AbstractTool {
 			//
 			if (ci != null) {
 				Vector2i v = ci.getPin(0).getPosition();
-				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE, false);
+				getRenderer().render(getApp(), ci, v.x, v.y, RenderState.OUTLINE);
 			}
 		}
 

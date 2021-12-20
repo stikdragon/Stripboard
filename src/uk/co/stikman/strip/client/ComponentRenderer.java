@@ -15,6 +15,7 @@ import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.model.ComponentInstance;
 import uk.co.stikman.strip.client.model.ComponentPoly;
 import uk.co.stikman.strip.client.model.PinInstance;
+import uk.co.stikman.strip.client.util.Colour;
 import uk.co.stikman.strip.client.util.Poly;
 
 public class ComponentRenderer {
@@ -22,6 +23,7 @@ public class ComponentRenderer {
 	private Map<VertCacheKey, float[]>	polyCache	= new HashMap<>();
 	private Stripboard					app;
 	private AppTheme					theme;
+	private Colour						pinColour;
 	private static final Matrix3		tmpm		= new Matrix3();
 	private static final Vector2		tv1			= new Vector2();
 	private static final Vector2		tv2			= new Vector2();
@@ -29,6 +31,7 @@ public class ComponentRenderer {
 	public ComponentRenderer(Stripboard app) {
 		this.app = app;
 		this.theme = app.getTheme();
+		this.pinColour = theme.getTextColour2();
 	}
 
 	/**
@@ -40,12 +43,12 @@ public class ComponentRenderer {
 	 * @param comp
 	 * @param x0
 	 * @param y0
-	 * @param pinnames 
+	 * @param pinnames
 	 * @param ghost
 	 * @param x1
 	 * @param y1
 	 */
-	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state, boolean pinnames) {
+	public void render(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state) {
 		RenderIntf ctx = app.getRenderer();
 
 		List<ComponentPoly> polys = comp.getComponent().getPolys(comp);
@@ -54,12 +57,8 @@ public class ComponentRenderer {
 		} else {
 			tmpm.makeTranslation(x0, y0);
 
-			for (PinInstance pin : comp.getPins()) {
+			for (PinInstance pin : comp.getPins())
 				ctx.drawPin(pin.getPosition().x, pin.getPosition().y, state);
-				if (pinnames) {
-					ctx.drawText(pin.getModel().getName(), pin.getPosition(), TextType.SMALL);
-				}
-			}
 
 			if (state == RenderState.OUTLINE) {
 				//
@@ -83,7 +82,7 @@ public class ComponentRenderer {
 						float[] a = p.getVerts();
 						ctx.drawLead(a[0], a[1], a[2], a[3], tmpm);
 						break;
-						
+
 					case WIRE:
 						// 
 						// a line (or lead maybe?)
@@ -95,6 +94,13 @@ public class ComponentRenderer {
 				}
 			}
 		}
+	}
+
+	public void renderPins(Stripboard app, ComponentInstance comp, int x0, int y0, RenderState state) {
+		RenderIntf ctx = app.getRenderer();
+		for (PinInstance pin : comp.getPins())
+			if (pin.getModel().getName() != null)
+				ctx.drawText(pin.getModel().getName(), tv1.set(pin.getPosition()).add(0.0f, 0.5f), TextType.PIN_LABEL, pinColour);
 	}
 
 	private void missing(RenderIntf ctx, ComponentInstance comp, int x0, int y0, RenderState state) {

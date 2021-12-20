@@ -20,7 +20,6 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.thirdparty.guava.common.io.Resources;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -29,7 +28,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -38,6 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
 import uk.co.stikman.strip.client.FileDialog.Mode;
 import uk.co.stikman.strip.client.math.Matrix3;
 import uk.co.stikman.strip.client.math.Vector2;
+import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.model.Board;
 import uk.co.stikman.strip.client.model.Component;
 import uk.co.stikman.strip.client.model.ComponentInstance;
@@ -75,13 +74,15 @@ public class Stripboard implements EntryPoint {
 	private static final float		HOLE_SIZE			= 0.2f;
 	public static final float		EXPAND_AMOUNT		= 0.4f;
 
+	private Vector2					tmpv				= new Vector2();
+	private Vector2i				tmpv2				= new Vector2i();
+
 	private Canvas					cnv;
 	private Board					board;
 	private AppTheme				theme				= new AppTheme();
 	private Matrix3					view				= new Matrix3();
 	private ComponentLibrary		library;
 	private AbstractTool			currentTool;
-	private Vector2					tmpv				= new Vector2();
 	private Matrix3					inverseView;
 	private RenderIntf				renderer;
 	private boolean					invalid;
@@ -131,13 +132,28 @@ public class Stripboard implements EntryPoint {
 	}
 
 	private void mnuNew() {
+		checkSaveFirst(() -> {
+			board = new Board(64, 64);
+			drawBoard(board);
+		});
+	}
+
+	private void checkSaveFirst(VoidMethod andthen) {
+		boolean b = false;
 		if (board != null) {
 			if (board.isModified()) {
-				// TODO: show save dialog
+				b = true;
+				QueryDlg d = new QueryDlg(this, "Save?", "Unsaved work, save first?");
+				d.addButton("cancel", "Cancel", id -> { // nothing to do
+				});
+				d.addButton("save", "Save", id -> {
+					mnuSave(andthen);
+				});
+				d.addButton("discard", "Discard", id -> andthen.go());
 			}
 		}
-		board = new Board(64, 64);
-		drawBoard(board);
+		if (!b)
+			andthen.go();
 	}
 
 	private void mnuAbout() {
@@ -158,7 +174,7 @@ public class Stripboard implements EntryPoint {
 	private void mnuSaveAs() {
 	}
 
-	private void mnuSave() {
+	private void mnuSave(VoidMethod andthen) {
 		if (board.getFilename() != null) {
 			fileSystem.save(board.getFilename(), board.toJSON());
 		} else {
@@ -169,6 +185,8 @@ public class Stripboard implements EntryPoint {
 			dlg.setOnOK(name -> {
 				board.setFilename(name);
 				fileSystem.save(board.getFilename(), board.toJSON());
+				if (andthen != null)
+					andthen.go();
 			});
 			dlg.show();
 		}
@@ -179,7 +197,7 @@ public class Stripboard implements EntryPoint {
 		MenuBar mnuFile = new MenuBar(true);
 		mnuFile.addItem(new IconMenuItem("New", RES.new_(), this::mnuNew));
 		mnuFile.addItem(new IconMenuItem("Open", RES.folder(), this::mnuOpen));
-		mnuFile.addItem(new IconMenuItem("Save", RES.disk(), this::mnuSave));
+		mnuFile.addItem(new IconMenuItem("Save", RES.disk(), () -> mnuSave(null)));
 		mnuFile.addItem(new IconMenuItem("Save As...", RES.empty(), this::mnuSaveAs));
 
 		MenuBar mnuEdit = new MenuBar(true);
@@ -356,9 +374,16 @@ public class Stripboard implements EntryPoint {
 		boolean pinnames = viewStates.isOn(ViewStates.PIN_NAME);
 		for (ComponentInstance comp : board.getComponents()) {
 			PinInstance p = comp.getPin(0);
-			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL, pinnames);
-			if (names)
-				renderer.drawText(comp.getName(), p.getPosition(), TextType.SMALL);
+			getComponentRenderer().render(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
+			if (pinnames)
+				getComponentRenderer().renderPins(this, comp, p.getPosition().x, p.getPosition().y, RenderState.NORMAL);
+			if (names && comp.getName() != null) {
+				//
+				// put in middle i guess?
+				//
+				comp.getCentre(tmpv).add(0.5f, 0.5f);
+				renderer.drawText(comp.getName(), tmpv, TextType.COMP_LABEL);
+			}
 		}
 
 		for (Hole h : errorholes)
@@ -446,5 +471,10 @@ public class Stripboard implements EntryPoint {
 
 	public ViewStates getViewStates() {
 		return viewStates;
+	}
+
+	public void afterDialog(StripDialog dlg) {
+		cnv.setFocus(true);
+		render();
 	}
 }

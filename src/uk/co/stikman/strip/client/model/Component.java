@@ -11,8 +11,8 @@ public abstract class Component {
 	private String		desc;
 	private List<Pin>	pins	= new ArrayList<>();
 	private Vector2i	size	= null;
-	private String prefix = "X";
-	
+	private String		prefix	= null;
+
 	public Component(String group, String name) {
 		super();
 		this.group = group;

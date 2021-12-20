@@ -59,5 +59,11 @@ public abstract class StripDialog extends DialogBox {
 	public final Stripboard getApp() {
 		return app;
 	}
+	
+	@Override
+	public void hide() {
+		super.hide();
+		getApp().afterDialog(this);
+	}
 
 }

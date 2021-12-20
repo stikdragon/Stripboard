@@ -20,6 +20,7 @@ public class AboutDialog extends StripDialog {
 		super(app, "About", 400, 400);
 		addButton("close", "close", this::close);
 		getLayoutPanel().add(new HTML(bundle.about().getText()));
+		setAutoHideEnabled(true);
 	}
 
 	private void close(String id) {

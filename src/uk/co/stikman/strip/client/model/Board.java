@@ -67,10 +67,12 @@ public class Board {
 		//
 		// find a new ID for it
 		//
-		String p = inst.getComponent().getPrefix();
-		int n = prefixCounter.containsKey(p) ? prefixCounter.get(p) : 1;
-		prefixCounter.put(p, Integer.valueOf(n + 1));
-		inst.setName(p + n);
+		if (inst.getComponent().getPrefix() != null) {
+			String p = inst.getComponent().getPrefix();
+			int n = prefixCounter.containsKey(p) ? prefixCounter.get(p) : 1;
+			prefixCounter.put(p, Integer.valueOf(n + 1));
+			inst.setName(p + n);
+		}
 		modified = true;
 	}
 
@@ -181,6 +183,7 @@ public class Board {
 			Component model = library.get(m);
 			ComponentInstance ci = new ComponentInstance(this, model);
 			JSONArray arr2 = jo.getArray("pins");
+			ci.setName(jo.optString("name", null));
 			for (int j = 0; j < arr2.size(); ++j) {
 				Vector2i v = Vector2i.parse(arr2.getString(j));
 				ci.getPin(j).setPosition(v);

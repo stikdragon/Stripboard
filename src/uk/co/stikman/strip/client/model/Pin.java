@@ -6,7 +6,7 @@ public class Pin {
 	private Component	owner;
 	private int			id;
 	private Vector2i	position	= new Vector2i();
-	private String		name;
+	private String		name		= null;
 
 	public final Component getOwner() {
 		return owner;

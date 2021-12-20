@@ -1,3 +1,12 @@
+.viewstaterow .gwt-Label { 
+	display: inline-block;
+	padding: 8px;
+}
+
+.viewstaterow .get-CheckBox {
+	
+}
+
 .sample {
 	padding: 4px;
 	cursor: pointer;

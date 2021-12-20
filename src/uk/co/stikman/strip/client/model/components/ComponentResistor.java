@@ -12,6 +12,7 @@ import uk.co.stikman.strip.client.model.ComponentPoly;
 import uk.co.stikman.strip.client.model.ComponentPolyType;
 import uk.co.stikman.strip.client.model.ComponentType;
 import uk.co.stikman.strip.client.model.PolyCache;
+import uk.co.stikman.strip.client.util.Util;
 
 public class ComponentResistor extends Component {
 
@@ -71,59 +72,82 @@ public class ComponentResistor extends Component {
 	public List<ComponentPoly> getPolys(ComponentInstance inst) {
 		Board brd = inst.getBoard();
 
+		//TODO upright resistors
+
 		PolyCache cache = brd.getPolyCache();
 		List<ComponentPoly> polys = cache.get(inst);
 		if (polys == null) {
 			Vector2 p0 = new Vector2(inst.getPin(0).getPosition());
 			Vector2 p1 = new Vector2(inst.getPin(1).getPosition());
-			float dx = p1.x - p0.x;
-			float dy = p1.y - p0.y;
-			float mu = (float) Math.sqrt(dx * dx + dy * dy);
-			float udx = 0;
-			float udy = 0;
-			if (mu > 0.0f) {
-				udx = dx / mu;
-				udy = dy / mu;
-			}
-
-			Matrix3 xm = tmpm.makeIdentity();
-			xm.translate(0.5f + dx / 2.0f, 0.5f + dy / 2.0f); // in middle of lead
-
-			if (mu > 0.0f)
-				xm.rotate(dy / mu, dx / mu); // normalise for rotation vector
 
 			polys = new ArrayList<>();
 
 			//
-			// generate poly for body
+			// if this is <= 3 holes apart then it's an upright resistor
 			//
-			Vector2 v = new Vector2();
-			Vector2 out = new Vector2();
-			float[] verts = new float[RESISTOR_VERTS.length];
-			for (int i = 0; i < RESISTOR_VERTS.length; i += 2) {
-				v.set(RESISTOR_VERTS[i], RESISTOR_VERTS[i + 1]);
-				xm.multiply(v, out);
-				verts[i] = out.x;
-				verts[i + 1] = out.y;
+			if (p0.distanceToSq(p1) <= 8) {
+				//
+				// so a circle on the first pin, then a lead to the other i guess?
+				//
+				float[] verts = Util.circlePoly(0.65f, 16);
+				Util.multiplyMat3VertV(tmpm.makeTranslation(0.5f, 0.5f), verts);
+				polys.add(new ComponentPoly(ComponentPolyType.BODY, verts));
+
+				float[] leg = new float[4];
+				leg[0] =  0.5f;
+				leg[1] =  0.5f;
+				leg[2] = p1.x - p0.x + 0.5f;
+				leg[3] = p1.y - p0.y + 0.5f;
+				polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
+
+			} else {
+				float dx = p1.x - p0.x;
+				float dy = p1.y - p0.y;
+				float mu = (float) Math.sqrt(dx * dx + dy * dy);
+				float udx = 0;
+				float udy = 0;
+				if (mu > 0.0f) {
+					udx = dx / mu;
+					udy = dy / mu;
+				}
+
+				Matrix3 xm = tmpm.makeIdentity();
+				xm.translate(0.5f + dx / 2.0f, 0.5f + dy / 2.0f); // in middle of lead
+
+				if (mu > 0.0f)
+					xm.rotate(dy / mu, dx / mu); // normalise for rotation vector
+
+				//
+				// generate poly for body
+				//
+				Vector2 v = new Vector2();
+				Vector2 out = new Vector2();
+				float[] verts = new float[RESISTOR_VERTS.length];
+				for (int i = 0; i < RESISTOR_VERTS.length; i += 2) {
+					v.set(RESISTOR_VERTS[i], RESISTOR_VERTS[i + 1]);
+					xm.multiply(v, out);
+					verts[i] = out.x;
+					verts[i + 1] = out.y;
+				}
+				polys.add(new ComponentPoly(ComponentPolyType.BODY, verts));
+
+				//
+				// so leg from p1->[0,1]  and [24,25]->p0
+				//
+				float[] leg = new float[4];
+				leg[0] = dx + 0.5f;
+				leg[1] = dy + 0.5f;
+				leg[2] = verts[24] - udx * 0.1f;
+				leg[3] = verts[25] - udy * 0.1f;
+				polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
+
+				leg = new float[4];
+				leg[0] = verts[0] + udx * 0.1f;
+				leg[1] = verts[1] + udy * 0.1f;
+				leg[2] = 0.5f;
+				leg[3] = 0.5f;
+				polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
 			}
-			polys.add(new ComponentPoly(ComponentPolyType.BODY, verts));
-
-			//
-			// so leg from p1->[0,1]  and [24,25]->p0
-			//
-			float[] leg = new float[4];
-			leg[0] = dx + 0.5f;
-			leg[1] = dy + 0.5f;
-			leg[2] = verts[24] - udx * 0.1f;
-			leg[3] = verts[25] - udy * 0.1f;
-			polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
-
-			leg = new float[4];
-			leg[0] = verts[0] + udx * 0.1f;
-			leg[1] = verts[1] + udy * 0.1f;
-			leg[2] = 0.5f;
-			leg[3] = 0.5f;
-			polys.add(new ComponentPoly(ComponentPolyType.LEAD, leg));
 
 			cache.put(inst, polys);
 		}

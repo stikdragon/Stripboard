@@ -1,7 +1,6 @@
 package uk.co.stikman.strip.client;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -10,7 +9,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class ToggleViewDlg extends StripDialog {
 
 	public ToggleViewDlg(Stripboard app) {
-		super(app, "Toggle Views", 140, 300);
+		super(app, "Toggle Views", 220, 200);
 
 		VerticalPanel vp = new VerticalPanel();
 
@@ -23,9 +22,9 @@ public class ToggleViewDlg extends StripDialog {
 		addLine(vp, "Component Names", "3", ViewStates.COMPONENT_NAME);
 		addLine(vp, "Pin Names", "4", ViewStates.PIN_NAME);
 
-		Button btnClose = new Button("Close");
-		vp.add(btnClose);
-		btnClose.addClickHandler(x -> hide());
+		addButton("close", "Close", x -> hide());
+		
+		setAutoHideEnabled(true);
 	}
 
 	private void addLine(VerticalPanel vp, String name, String key, String vsname) {

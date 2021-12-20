@@ -15,6 +15,7 @@ import de.lighti.clipper.Point.LongPoint;
 import uk.co.stikman.strip.client.json.JSONArray;
 import uk.co.stikman.strip.client.json.JSONObject;
 import uk.co.stikman.strip.client.math.Matrix3;
+import uk.co.stikman.strip.client.math.Vector2;
 import uk.co.stikman.strip.client.math.Vector2i;
 import uk.co.stikman.strip.client.util.Poly;
 
@@ -34,7 +35,7 @@ public class ComponentInstance {
 	private Matrix3				tmpM		= new Matrix3();
 	private Board				board;
 	private Poly				outlinePoly;
-	private Vector2i tv = new Vector2i();
+	private Vector2i			tv			= new Vector2i();
 
 	public ComponentInstance(Board board, Component component) {
 		super();
@@ -174,10 +175,24 @@ public class ComponentInstance {
 		jo.put("model", component.getName());
 		jo.put("rot", rotation);
 		JSONArray arr = new JSONArray();
-		for (PinInstance p : pins) 
+		for (PinInstance p : pins)
 			arr.add(p.getPosition().x + "," + p.getPosition().y);
 		jo.put("pins", arr);
 		return jo;
+	}
+
+	/**
+	 * we'll do this by averaging pin positions
+	 * 
+	 * @param out
+	 * @return
+	 */
+	public Vector2 getCentre(Vector2 out) {
+		out.set(0, 0);
+		for (PinInstance p : pins)
+			out.add(p.getPosition());
+		out.multiply(1.0f / (float)pins.size());
+		return out;
 	}
 
 }

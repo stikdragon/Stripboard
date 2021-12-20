@@ -17,6 +17,7 @@ public class AppTheme {
 	private Colour	ghostColour			= new Colour("FFFFFF7C");
 	private Colour	errorColour			= new Colour("FF4040C0");
 	private Colour	textColour			= new Colour("FFFFFF");
+	private Colour	textColour2			= new Colour("C0C0FFC0");
 
 	public AppTheme() {
 		super();
@@ -72,6 +73,10 @@ public class AppTheme {
 
 	public final Colour getTextColour() {
 		return textColour;
+	}
+
+	public final Colour getTextColour2() {
+		return textColour2;
 	}
 
 }

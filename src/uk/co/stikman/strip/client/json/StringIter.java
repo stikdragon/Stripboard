@@ -1,7 +1,5 @@
 package uk.co.stikman.strip.client.json;
 
-import java.util.Arrays;
-
 public class StringIter {
 
 	private char[]	src;

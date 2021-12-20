@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class JSONObject {
 	Map<String, Object> map = new HashMap<>();
-	
+
 	public JSONObject() {
 		super();
 	}
@@ -92,6 +92,15 @@ public class JSONObject {
 
 	void put(String k, Object val) {
 		map.put(k, val);
+	}
+
+	public String optString(String key, String def) {
+		if (!map.containsKey(key))
+			return def;
+		Object o = map.get(key);
+		if (o instanceof String)
+			return (String) o;
+		throw new JSONException("[" + key + "] is not a string");
 	}
 
 }

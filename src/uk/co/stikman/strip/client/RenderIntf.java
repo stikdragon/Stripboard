@@ -1,8 +1,8 @@
 package uk.co.stikman.strip.client;
 
-import java.awt.Color;
-
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
+import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.google.gwt.canvas.dom.client.CssColor;
 
 import uk.co.stikman.strip.client.math.Matrix3;
@@ -24,13 +24,14 @@ public class RenderIntf {
 	private String				breakcolour;
 	private String				ghostColour;
 	private String				errorColour;
-	private String textColour;
+	private Colour				textColour;
 	private Vector3				tmpv	= new Vector3();
 	private Vector3				tmpv2	= new Vector3();
 	private Vector3				tmpv3	= new Vector3();
 	private Vector3				tmpv4	= new Vector3();
 	private Vector3				tmpv5	= new Vector3();
 	private Matrix3				tmpm	= new Matrix3();
+	private int					fontsize;
 
 	public RenderIntf(Matrix3 view, Stripboard app, Context2d context) {
 		super();
@@ -44,7 +45,17 @@ public class RenderIntf {
 		wireColour = app.getTheme().getWireColour().css();
 		ghostColour = app.getTheme().getGhostColour().css();
 		errorColour = app.getTheme().getErrorColour().css();
-		textColour = app.getTheme().getTextColour().css();
+		textColour = app.getTheme().getTextColour();
+
+		String s = context.getFont();
+		int i;
+		for (i = 0; i < s.length(); ++i) {
+			if (!Character.isDigit(s.charAt(i))) {
+				break;
+			}
+		}
+
+		fontsize = Integer.parseInt(s.substring(0, i));
 	}
 
 	public final Matrix3 getView() {
@@ -74,15 +85,15 @@ public class RenderIntf {
 	public void drawPin(int x, int y, RenderState state) {
 		context.beginPath();
 		switch (state) {
-			case ERROR:
-				context.setFillStyle(errorColour);
-				break;
-			case GHOST:
-				context.setFillStyle(ghostColour);
-				break;
-			case NORMAL:
-				context.setFillStyle(pinColour);
-				break;
+		case ERROR:
+			context.setFillStyle(errorColour);
+			break;
+		case GHOST:
+			context.setFillStyle(ghostColour);
+			break;
+		case NORMAL:
+			context.setFillStyle(pinColour);
+			break;
 
 		}
 		CanvasUtil.circle(context, view, x + 0.5f, y + 0.5f, 0.4f);
@@ -189,8 +200,6 @@ public class RenderIntf {
 		context.stroke();
 	}
 
-	
-	
 	public void drawWireOld(Vector2i a, Vector2i b) {
 		//
 		// draw an inner wire in lead colour, then an outer one that's shorter and fatter
@@ -272,18 +281,30 @@ public class RenderIntf {
 			setLineDash(context, new int[] {});
 	}
 
-	public void drawText(String text, Vector2i pos, TextType type) {
+	public void drawText(String text, Vector2 pos, TextType type) {
+		drawText(text, pos, type, null);
+	}
+
+	public void drawText(String text, Vector2 pos, TextType type, Colour col) {
+		int sz = type == TextType.PIN_LABEL ? 10 : 14;
+		context.setFont(sz + "px consolas");
+
 		tmpv.set(pos.x, pos.y, 1.0f);
 		view.multiply(tmpv, tmpv2);
 		int x = (int) tmpv2.x;
-		int y = (int) tmpv2.y;
+		int y = (int) tmpv2.y; 
+
+		Colour c = (col == null ? textColour : col);
+		Colour c2 = c.darker(0.3f); // TODO: avoid this
 		
+		context.setTextAlign(type == TextType.PIN_LABEL ? TextAlign.LEFT : TextAlign.CENTER);
+		context.setTextBaseline(TextBaseline.MIDDLE);
 		context.setLineWidth(3.0f);
-		context.setStrokeStyle("black");
+		context.setStrokeStyle(c2.css());
 		context.strokeText(text, x, y);
-		
-		context.setFillStyle(textColour);
+
+		context.setFillStyle(c.css());
 		context.fillText(text, x, y);
 	}
-	
+
 }

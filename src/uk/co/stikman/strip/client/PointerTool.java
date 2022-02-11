@@ -196,7 +196,30 @@ public class PointerTool extends AbstractTool {
 			renameHover();
 		} else if (ch == 'v') {
 			toggleViews();
+		} else if (ch == 'r') {
+			rotate();
 		}
+	}
+
+	private void rotate() {
+		if (hover == null)
+			return;
+		ComponentInstance ci = getComponent();
+		if (ci.getComponent().isStretchy() && ci.getComponent().getPins().size() == 2) {
+			ci.setRotation(ci.getRotation() + 2);
+		} else if (!ci.getComponent().isStretchy()) {
+			ci.setRotation(ci.getRotation() + 1);
+		}
+		getApp().invalidate();
+	}
+
+	private ComponentInstance getComponent() {
+		ComponentInstance ci = null;
+		if (hover instanceof PinInstance)
+			ci = ((PinInstance) hover).getComponentInstance();
+		else if (hover instanceof ComponentInstance)
+			ci = (ComponentInstance) hover;
+		return ci;
 	}
 
 	private void toggleViews() {

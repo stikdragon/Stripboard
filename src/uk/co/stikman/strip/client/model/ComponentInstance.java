@@ -73,7 +73,7 @@ public class ComponentInstance {
 	}
 
 	public final void setRotation(int rotation) {
-		this.rotation = rotation;
+		this.rotation = rotation % 4;
 		modified();
 	}
 
